@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+  --font-display: "Fraunces", Georgia, serif;
+  --font-sans: "Hanken Grotesk", system-ui, sans-serif;
+  --font-mono: "Space Mono", ui-monospace, monospace;
+}
+
+body {
+  background-color: #f8f1e4;
+  background-image: radial-gradient(#f2e8d6 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: #1c1813;
+  -webkit-font-smoothing: antialiased;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+input[type="number"] { -moz-appearance: textfield; }
+
+@media print {
+  body { background: #fff; }
+  body * { visibility: hidden; }
+  #invoice-preview, #invoice-preview * { visibility: visible; }
+  #invoice-preview {
+    position: absolute; left: 0; top: 0; width: 100%;
+    box-shadow: none; border: none; border-radius: 0; padding: 0;
+  }
+}
+
+@layer components {
+  .field-input {
+    @apply w-full text-[15px] text-ink bg-paper border-2 border-ink rounded-[10px] px-[13px] py-[11px]
+           transition focus:outline-none focus:bg-white focus:shadow-hardsm;
+  }
+  .field-label { @apply block text-[13px] font-semibold text-ink2 mb-[6px]; }
+}
