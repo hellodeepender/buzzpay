@@ -4,6 +4,7 @@ const tabs = [
   { href: "/payment-fee-calculator", label: "Fee Calculator", short: "Fees" },
   { href: "/invoice-generator", label: "Invoice Generator", short: "Invoice" },
   { href: "/freelance-rate-calculator", label: "Rate Calculator", short: "Rate" },
+  { href: "/templates", label: "Templates", short: "Templates" },
 ];
 
 export default function Header() {
