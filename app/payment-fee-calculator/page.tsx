@@ -10,7 +10,11 @@ export const metadata: Metadata = {
 
 const faq = [
   { q: "How much does Stripe charge in fees?", a: "Stripe's common U.S. standard online rate is 2.9% plus $0.30 per transaction. Rates vary by country, card type, and negotiated pricing, so this calculator lets you edit them." },
-  { q: "How do I calculate what to charge to receive a specific amount?", a: "Use the 'I want to receive an amount' mode. The calculator grosses up your target using the formula charge = (target + fixed fee) / (1 − percentage rate) so your payout lands on the exact figure you need." },
+  { q: "How are PayPal's fees different from Stripe's?", a: "PayPal's common U.S. goods-and-services rate is 3.49% plus $0.49 — higher than the 2.9% + $0.30 that Stripe and Square typically charge. Switch the preset to compare, and the effective-rate line shows which costs you more at your usual transaction size." },
+  { q: "How do I calculate what to charge to receive a specific amount?", a: "Use the 'I want to receive an amount' mode. The calculator grosses up your target using charge = (target + fixed fee) / (1 − percentage rate) so your payout lands on the exact figure you need." },
+  { q: "Why do small payments feel so expensive?", a: "Because of the fixed fee. A $0.30 fee on a $5 charge is 6% before the percentage even applies, so very small transactions carry a high effective rate. Receiving fewer, larger payments reduces how often you pay it." },
+  { q: "Do international cards cost more?", a: "Usually yes. Processors typically add roughly 1% for internationally issued cards, plus possible currency-conversion fees, so a cross-border payment costs more than the domestic preset. Edit the percentage to model your case." },
+  { q: "Do I get the fee back if I refund a customer?", a: "Usually not — processors generally keep their per-transaction fee on refunds, so a refunded sale can still cost you money. Worth factoring into thin-margin pricing." },
   { q: "Is this fee calculator free?", a: "Yes. All buzzpay calculators are free with no signup." },
 ];
 
@@ -31,6 +35,9 @@ export default function Page() {
         <h2 className="font-display text-2xl font-semibold mb-3">How payment processing fees work</h2>
         <p className="mb-3">Most processors charge two parts on every transaction: a percentage of the amount plus a small fixed fee. On a $100 charge at 2.9% + $0.30 you pay $3.20 in fees and keep $96.80. The fixed fee hurts most on small transactions — on a $5 charge that same pricing takes nearly 9%.</p>
         <p>If you need to receive an exact amount (say a $100 deposit), don&apos;t just add the percentage back — that undershoots. Grossing up correctly means dividing by one minus the rate, which this calculator does for you in reverse mode.</p>
+        <h2 className="font-display text-2xl font-semibold mt-9 mb-3 text-ink">Stripe vs PayPal vs Square: which keeps more?</h2>
+        <p className="mb-3">Stripe and Square both commonly charge 2.9% + $0.30 on online card payments, while PayPal&apos;s goods-and-services rate is usually higher at 3.49% + $0.49. Which one actually costs you more depends on your transaction size: the fixed fee dominates small charges, while the percentage dominates large ones. Switch the presets above and watch the effective rate to see the real difference for the amounts you take.</p>
+        <p>Two costs people forget: refunds and international cards. Refunding a sale usually doesn&apos;t return the processor&apos;s fee, and cards issued abroad often add around 1% plus currency conversion. If your margins are thin, build both into your prices rather than discovering them later.</p>
       </Explainer>
     </div>
   );

@@ -11,7 +11,11 @@ export const metadata: Metadata = {
 const faq = [
   { q: "Is this invoice generator really free?", a: "Yes. You can create and download invoices as PDFs with no signup and no watermark hassle." },
   { q: "How do I save the invoice as a PDF?", a: "Click 'Save as PDF' — it opens your browser's print dialog, where you choose 'Save as PDF' as the destination. The output shows only the invoice." },
+  { q: "Can I use a currency other than US dollars?", a: "Yes — choose from USD, GBP, EUR, CAD, or AUD in the currency selector and every amount on the invoice updates to match." },
   { q: "What should every invoice include?", a: "Your business name and contact, the client's details, a unique invoice number, issue and due dates, itemized line items with quantities and prices, any tax, the total, and payment terms." },
+  { q: "How should I number my invoices?", a: "Use a simple sequential scheme like INV-001, INV-002. Consistent numbering prevents duplicates and makes bookkeeping and tax time far easier." },
+  { q: "What payment terms should I use?", a: "Net 14 or Net 30 are common. State the due date plainly and list accepted payment methods in the notes — clearer, shorter terms tend to get you paid faster." },
+  { q: "Is my invoice data private?", a: "Yes. Your invoice is built entirely in your browser and isn't stored on our servers." },
 ];
 
 export default function Page() {
@@ -31,6 +35,9 @@ export default function Page() {
         <h2 className="font-display text-2xl font-semibold mb-3 text-ink">What to put on a freelance invoice</h2>
         <p className="mb-3">A professional invoice removes friction from getting paid. Include a clear invoice number for your records, the issue and due dates, and itemized work so the client can see exactly what they&apos;re paying for. Spell out payment terms — &quot;due within 14 days&quot; is standard — and add accepted payment methods in the notes.</p>
         <p>Keep numbers consistent (INV-001, INV-002) and send the invoice promptly; invoices sent the day work finishes get paid noticeably faster than ones that lag.</p>
+        <h2 className="font-display text-2xl font-semibold mt-9 mb-3 text-ink">How to get invoices paid faster</h2>
+        <p className="mb-3">Late payment is usually a friction problem, not a goodwill one. Make the due date explicit rather than vague, itemize clearly so nothing looks like a surprise, and offer a payment method that takes one step. A short, polite reminder a few days before the due date — and again just after — recovers most slow payers without awkwardness.</p>
+        <p>For repeat clients, agree terms up front and bill on a predictable schedule. The less a client has to think about how and when to pay, the sooner you see the money.</p>
         <h2 className="font-display text-2xl font-semibold mt-9 mb-4 text-ink">Frequently asked</h2>
         <div className="flex flex-col gap-4">{faq.map((f, i) => (<div key={i}><b className="text-ink">{f.q}</b><p className="mt-1">{f.a}</p></div>))}</div>
       </section>
