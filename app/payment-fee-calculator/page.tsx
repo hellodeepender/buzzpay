@@ -17,7 +17,7 @@ const faq = [
 export default function Page() {
   return (
     <div className="py-2">
-      <WebAppJsonLd name="Payment Fee Calculator" url="https://buzzpay.app/payment-fee-calculator"
+      <WebAppJsonLd name="Payment Fee Calculator" url="https://www.buzzpay.app/payment-fee-calculator"
         description="Calculate net payout after Stripe, PayPal, and Square fees." />
       <FaqJsonLd items={faq} />
       <section className="max-w-[680px] mb-[22px]">
