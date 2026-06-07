@@ -10,9 +10,9 @@ export default function Header() {
   return (
     <header className="pt-7 pb-2">
       <div className="flex items-center justify-between flex-wrap gap-3.5">
-        <Link href="/" className="flex items-baseline font-display font-bold text-[30px] tracking-tight text-ink no-underline">
+        <Link href="/" className="flex items-center gap-2.5 font-display font-bold text-[30px] tracking-tight text-ink no-underline">
+          <span className="inline-grid place-items-center w-9 h-9 bg-honey border-2 border-ink rounded-[11px] shadow-hardsm font-black text-[20px] leading-none">b</span>
           buzzpay
-          <span className="w-[11px] h-[11px] bg-honey border-2 border-ink rounded-full inline-block -translate-y-0.5 ml-[3px]" />
         </Link>
         <div className="text-sm text-ink2 font-medium">
           Free tools to <b className="text-ink">get paid</b> — for freelancers &amp; small businesses
