@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, type ChangeEvent } from "react";
 import { money } from "@/lib/format";
 import RecoCard from "./RecoCard";
 import { Repeat } from "lucide-react";
@@ -17,6 +17,7 @@ export default function InvoiceGenerator() {
   const [due, setDue] = useState("");
   const [tax, setTax] = useState("0");
   const [notes, setNotes] = useState("Payment due within 14 days. Thank you!");
+  const [logo, setLogo] = useState<string | null>(null);
   const [items, setItems] = useState<Item[]>([
     { d: "Design work — homepage", q: 1, p: 1200 },
     { d: "Revisions (hourly)", q: 4, p: 90 },
@@ -32,6 +33,15 @@ export default function InvoiceGenerator() {
     setItems((arr) => arr.map((it, idx) => idx === i ? { ...it, [k]: k === "d" ? v : (parseFloat(v) || 0) } : it));
   const addItem = () => setItems((a) => [...a, { d: "", q: 1, p: 0 }]);
   const delItem = (i: number) => setItems((a) => (a.length > 1 ? a.filter((_, idx) => idx !== i) : a));
+  const onLogo = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { alert("Please choose an image file (PNG, JPG, SVG)."); return; }
+    if (file.size > 2 * 1024 * 1024) { alert("Logo must be under 2MB."); return; }
+    const reader = new FileReader();
+    reader.onload = () => setLogo(reader.result as string);
+    reader.readAsDataURL(file);
+  };
 
   const sub = items.reduce((s, it) => s + it.q * it.p, 0);
   const taxRate = parseFloat(tax) || 0;
@@ -44,6 +54,19 @@ export default function InvoiceGenerator() {
       <div className="bg-card border-2 border-ink rounded-xl2 shadow-hard p-6">
         <h2 className="font-display text-xl font-semibold mb-1">Invoice details</h2>
         <p className="text-muted text-[13.5px] mb-[18px]">Everything updates the preview instantly.</p>
+
+        <div className="mb-[18px]">
+          <label className="field-label">Logo (optional)</label>
+          {logo ? (
+            <div className="flex items-center gap-3">
+              <img src={logo} alt="Logo preview" className="h-12 max-w-[120px] object-contain border-2 border-ink rounded-[8px] bg-white p-1" />
+              <button onClick={() => setLogo(null)} className="text-clay font-semibold text-[13.5px] underline">Remove</button>
+            </div>
+          ) : (
+            <input type="file" accept="image/*" onChange={onLogo}
+              className="block w-full text-[13.5px] text-ink2 cursor-pointer file:mr-3 file:py-2 file:px-3 file:rounded-[8px] file:border-2 file:border-ink file:bg-honey file:font-semibold file:text-ink file:cursor-pointer" />
+          )}
+        </div>
 
         <div className="grid grid-cols-2 gap-3">
           <Fld label="Your name / business" v={from} set={setFrom} />
@@ -94,6 +117,7 @@ export default function InvoiceGenerator() {
 
       <div>
         <div id="invoice-preview" className="bg-white border-2 border-ink rounded-xl2 shadow-hard p-[30px]">
+          {logo && <img src={logo} alt="" className="max-h-16 max-w-[200px] object-contain mb-5" />}
           <div className="flex justify-between items-start gap-4 mb-6">
             <div><b className="font-display text-xl">{from || "Your Business"}</b><p className="text-[13px] text-ink2">{fromEmail}</p></div>
             <div className="text-right text-[13px]">
