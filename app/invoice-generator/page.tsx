@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import InvoiceGenerator from "@/components/InvoiceGenerator";
 import { WebAppJsonLd, FaqJsonLd } from "@/components/JsonLd";
 
@@ -29,6 +30,7 @@ export default function Page() {
           Send a <em className="italic text-honeyDeep">clean invoice</em> in 60 seconds.
         </h1>
         <p className="text-ink2 text-base">Fill it in, watch it build live, then save as PDF. No signup, no watermark hassle.</p>
+        <p className="text-[13.5px] text-ink2 mt-2">Need a starting point? <Link href="/templates" className="text-honeyDeep font-semibold">Browse free invoice templates →</Link></p>
       </section>
       <InvoiceGenerator />
       <section className="mt-12 max-w-[720px] text-[15px] text-ink2 leading-relaxed">

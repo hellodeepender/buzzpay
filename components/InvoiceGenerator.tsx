@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, type ChangeEvent } from "react";
 import { money } from "@/lib/format";
+import { templates } from "@/lib/templates";
 import RecoCard from "./RecoCard";
 import { Repeat } from "lucide-react";
 
@@ -27,6 +28,13 @@ export default function InvoiceGenerator() {
     const t = new Date(), d = new Date(); d.setDate(d.getDate() + 14);
     setDate(t.toISOString().slice(0, 10));
     setDue(d.toISOString().slice(0, 10));
+    const slug = new URLSearchParams(window.location.search).get("template");
+    const tpl = slug ? templates[slug] : null;
+    if (tpl) {
+      setItems(tpl.sample.items.map((it) => ({ ...it })));
+      setNotes(tpl.sample.notes);
+      if (tpl.sample.tax) setTax(tpl.sample.tax);
+    }
   }, []);
 
   const setItem = (i: number, k: keyof Item, v: string) =>
