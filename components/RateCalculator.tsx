@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { money } from "@/lib/format";
 import RecoCard from "./RecoCard";
+import { Clock } from "lucide-react";
 
 export default function RateCalculator() {
   const [take, setTake] = useState("70000");
@@ -52,7 +53,7 @@ export default function RateCalculator() {
             <Row label="Monthly billing target" value={money(gross / 12)} />
           </div>
         </div>
-        <RecoCard icon="⏱️" headline="Stop leaving money on the table."
+        <RecoCard icon={<Clock size={24} strokeWidth={2.1} />} headline="Stop leaving money on the table."
           body="Track billable hours and turn them into invoices automatically with FreshBooks."
           cta="See how" href="#" />
       </div>
