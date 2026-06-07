@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import FeeCalculator from "@/components/FeeCalculator";
 import { WebAppJsonLd, FaqJsonLd } from "@/components/JsonLd";
 
@@ -31,6 +32,11 @@ export default function Page() {
         <p className="text-ink2 text-base">See your real payout after Stripe, PayPal, or Square fees — or work backwards to find what to charge so you receive the exact amount you need.</p>
       </section>
       <FeeCalculator />
+      <div className="mt-4 text-[13.5px] text-ink2">Calculate fees for a specific processor:{" "}
+        <Link href="/payment-fee-calculator/stripe" className="text-honeyDeep font-semibold">Stripe</Link> ·{" "}
+        <Link href="/payment-fee-calculator/paypal" className="text-honeyDeep font-semibold">PayPal</Link> ·{" "}
+        <Link href="/payment-fee-calculator/square" className="text-honeyDeep font-semibold">Square</Link>
+      </div>
       <Explainer faq={faq}>
         <h2 className="font-display text-2xl font-semibold mb-3">How payment processing fees work</h2>
         <p className="mb-3">Most processors charge two parts on every transaction: a percentage of the amount plus a small fixed fee. On a $100 charge at 2.9% + $0.30 you pay $3.20 in fees and keep $96.80. The fixed fee hurts most on small transactions — on a $5 charge that same pricing takes nearly 9%.</p>

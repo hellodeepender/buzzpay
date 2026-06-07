@@ -11,11 +11,12 @@ const PRESETS = [
   { name: "Custom", pct: 0, fix: 0 },
 ];
 
-export default function FeeCalculator() {
+export default function FeeCalculator({ initial }: { initial?: string }) {
+  const init = PRESETS.find((x) => x.name === initial) ?? PRESETS[0];
   const [mode, setMode] = useState<"forward" | "reverse">("forward");
-  const [proc, setProc] = useState("Stripe");
-  const [pct, setPct] = useState("2.9");
-  const [fix, setFix] = useState("0.30");
+  const [proc, setProc] = useState(init.name);
+  const [pct, setPct] = useState(String(init.pct));
+  const [fix, setFix] = useState(init.fix.toFixed(2));
   const [amt, setAmt] = useState("100");
 
   const p = parseFloat(pct) || 0, f = parseFloat(fix) || 0, a = parseFloat(amt) || 0;
