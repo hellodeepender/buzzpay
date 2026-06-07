@@ -17,7 +17,7 @@ const faq = [
 export default function Page() {
   return (
     <div className="py-2">
-      <WebAppJsonLd name="Invoice Generator" url="https://buzzpay.app/invoice-generator"
+      <WebAppJsonLd name="Invoice Generator" url="https://www.buzzpay.app/invoice-generator"
         description="Create and download professional PDF invoices for free." />
       <FaqJsonLd items={faq} />
       <section className="max-w-[680px] mb-[22px]">

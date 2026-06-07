@@ -4,11 +4,10 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://buzzpay.app"),
+  metadataBase: new URL("https://www.buzzpay.app"),
   title: { default: "buzzpay — free tools to get paid", template: "%s · buzzpay" },
   description: "Free calculators for freelancers and small businesses: payment fee calculator, invoice generator, and freelance rate calculator.",
-  openGraph: { type: "website", siteName: "buzzpay", url: "https://buzzpay.app" },
-  twitter: { card: "summary_large_image", title: "buzzpay — free tools to get paid", description: "Free calculators for freelancers and small businesses." },
+  openGraph: { type: "website", siteName: "buzzpay", url: "https://www.buzzpay.app" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

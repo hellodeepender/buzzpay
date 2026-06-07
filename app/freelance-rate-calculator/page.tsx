@@ -17,7 +17,7 @@ const faq = [
 export default function Page() {
   return (
     <div className="py-2">
-      <WebAppJsonLd name="Freelance Rate Calculator" url="https://buzzpay.app/freelance-rate-calculator"
+      <WebAppJsonLd name="Freelance Rate Calculator" url="https://www.buzzpay.app/freelance-rate-calculator"
         description="Calculate the hourly rate you need from your take-home income goal." />
       <FaqJsonLd items={faq} />
       <section className="max-w-[680px] mb-[22px]">
