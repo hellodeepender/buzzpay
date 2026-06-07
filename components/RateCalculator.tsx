@@ -22,7 +22,7 @@ export default function RateCalculator() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-[22px] items-start">
-      <div className="bg-card border-2 border-ink rounded-xl2 shadow-hard p-6">
+      <div className="bg-card border-2 border-ink rounded-xl2 shadow-hard p-5 sm:p-6">
         <h2 className="font-display text-xl font-semibold mb-1">Your numbers</h2>
         <p className="text-muted text-[13.5px] mb-[18px]">Annual figures. Be honest about billable hours.</p>
 
@@ -42,7 +42,7 @@ export default function RateCalculator() {
       </div>
 
       <div>
-        <div className="bg-ink text-paper rounded-xl2 p-6 border-2 border-ink">
+        <div className="bg-ink text-paper rounded-xl2 p-5 sm:p-6 border-2 border-ink">
           <div className="text-[13px] uppercase tracking-wider text-honey font-bold mb-1.5">Charge at least</div>
           <div className="font-mono text-[clamp(34px,6vw,46px)] font-bold leading-none tracking-tight">{money(hourly)}/hr</div>
           <hr className="border-0 border-t border-paper/20 my-[18px]" />

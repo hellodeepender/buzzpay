@@ -31,7 +31,7 @@ export default function FeeCalculator() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-[22px] items-start">
-      <div className="bg-card border-2 border-ink rounded-xl2 shadow-hard p-6">
+      <div className="bg-card border-2 border-ink rounded-xl2 shadow-hard p-5 sm:p-6">
         <div className="flex border-2 border-ink rounded-[10px] overflow-hidden mb-[18px]">
           {(["forward", "reverse"] as const).map((m) => (
             <button key={m} onClick={() => setMode(m)}
@@ -79,7 +79,7 @@ export default function FeeCalculator() {
       </div>
 
       <div>
-        <div className="bg-ink text-paper rounded-xl2 p-6 border-2 border-ink">
+        <div className="bg-ink text-paper rounded-xl2 p-5 sm:p-6 border-2 border-ink">
           <span className="inline-block bg-honey text-ink font-bold text-xs py-[3px] px-[9px] rounded-full mb-3.5">
             {proc} · {p}% + ${f.toFixed(2)}
           </span>

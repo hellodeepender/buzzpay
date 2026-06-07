@@ -51,7 +51,7 @@ export default function InvoiceGenerator() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-[22px] items-start">
-      <div className="bg-card border-2 border-ink rounded-xl2 shadow-hard p-6">
+      <div className="bg-card border-2 border-ink rounded-xl2 shadow-hard p-5 sm:p-6">
         <h2 className="font-display text-xl font-semibold mb-1">Invoice details</h2>
         <p className="text-muted text-[13.5px] mb-[18px]">Everything updates the preview instantly.</p>
 
@@ -116,7 +116,7 @@ export default function InvoiceGenerator() {
       </div>
 
       <div>
-        <div id="invoice-preview" className="bg-white border-2 border-ink rounded-xl2 shadow-hard p-[30px]">
+        <div id="invoice-preview" className="bg-white border-2 border-ink rounded-xl2 shadow-hard p-5 sm:p-[30px]">
           {logo && <img src={logo} alt="" className="max-h-16 max-w-[200px] object-contain mb-5" />}
           <div className="flex justify-between items-start gap-4 mb-6">
             <div><b className="font-display text-xl">{from || "Your Business"}</b><p className="text-[13px] text-ink2">{fromEmail}</p></div>
@@ -131,7 +131,7 @@ export default function InvoiceGenerator() {
             <div className="text-[11px] uppercase tracking-wide text-muted font-bold mb-[3px]">Bill to</div>
             <b>{to || "Client"}</b><br />{toEmail}
           </div>
-          <table className="w-full border-collapse text-sm mb-2">
+          <div className="overflow-x-auto"><table className="w-full border-collapse text-sm mb-2">
             <thead><tr className="text-[11px] uppercase tracking-wide text-muted">
               <th className="text-left border-b-2 border-ink pb-2">Description</th>
               <th className="text-right border-b-2 border-ink pb-2">Qty</th>
@@ -146,7 +146,7 @@ export default function InvoiceGenerator() {
                 <td className="py-2.5 border-b border-paper2 text-right font-mono font-bold">{money(it.q * it.p, cur)}</td>
               </tr>
             ))}</tbody>
-          </table>
+          </table></div>
           <div className="ml-auto w-[240px] mt-3.5">
             <div className="flex justify-between text-sm py-[5px]"><span>Subtotal</span><span className="font-mono font-bold">{money(sub, cur)}</span></div>
             {taxRate > 0 && <div className="flex justify-between text-sm py-[5px]"><span>Tax ({taxRate}%)</span><span className="font-mono font-bold">{money(taxAmt, cur)}</span></div>}
