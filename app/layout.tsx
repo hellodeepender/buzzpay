@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: { default: "buzzpay — free tools to get paid", template: "%s · buzzpay" },
   description: "Free calculators for freelancers and small businesses: payment fee calculator, invoice generator, and freelance rate calculator.",
   openGraph: { type: "website", siteName: "buzzpay", url: "https://buzzpay.app" },
+  twitter: { card: "summary_large_image", title: "buzzpay — free tools to get paid", description: "Free calculators for freelancers and small businesses." },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -17,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap"
           rel="stylesheet"
         />
       </head>

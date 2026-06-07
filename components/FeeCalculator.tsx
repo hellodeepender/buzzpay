@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { money } from "@/lib/format";
 import RecoCard from "./RecoCard";
+import { Calculator } from "lucide-react";
 
 const PRESETS = [
   { name: "Stripe", pct: 2.9, fix: 0.30 },
@@ -96,7 +97,7 @@ export default function FeeCalculator() {
             <Row label="Effective rate" value={eff.toFixed(2) + "%"} />
           </div>
         </div>
-        <RecoCard icon="📊" headline="Tired of guessing your fees?"
+        <RecoCard icon={<Calculator size={24} strokeWidth={2.1} />} headline="Tired of guessing your fees?"
           body="Quaderno tracks Stripe & PayPal fees and taxes automatically across every sale."
           cta="Check it out" href="#" />
       </div>

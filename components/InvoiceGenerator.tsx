@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { money } from "@/lib/format";
 import RecoCard from "./RecoCard";
+import { Repeat } from "lucide-react";
 
 type Item = { d: string; q: number; p: number };
 
@@ -130,7 +131,7 @@ export default function InvoiceGenerator() {
           {notes && <div className="mt-6 text-[13px] text-ink2 border-t border-paper2 pt-3.5 whitespace-pre-wrap">{notes}</div>}
           <div className="mt-[22px] text-center text-[11px] text-muted">Made with <b className="text-honeyDeep">buzzpay.app</b></div>
         </div>
-        <RecoCard icon="🔁" headline="Sending invoices every month?"
+        <RecoCard icon={<Repeat size={24} strokeWidth={2.1} />} headline="Sending invoices every month?"
           body="FreshBooks automates recurring invoices, reminders, and tracks who's paid."
           cta="Try FreshBooks" href="#" />
       </div>
