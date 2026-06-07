@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import RateCalculator from "@/components/RateCalculator";
 import { WebAppJsonLd, FaqJsonLd } from "@/components/JsonLd";
 
@@ -30,6 +31,14 @@ export default function Page() {
         <p className="text-ink2 text-base">Work backwards from the income you actually want to take home — after taxes, expenses, and the hours you can&apos;t bill.</p>
       </section>
       <RateCalculator />
+      <section className="mt-10 max-w-[720px]">
+        <h2 className="font-display text-xl font-semibold mb-3">Rates by profession</h2>
+        <div className="flex flex-wrap gap-2">
+          {([["designer","Designer"],["writer","Writer"],["developer","Developer"],["consultant","Consultant"],["virtual-assistant","Virtual Assistant"]] as [string,string][]).map(([slug,label]) => (
+            <Link key={slug} href={`/freelance-rate-calculator/${slug}`} className="border-2 border-ink rounded-full px-4 py-1.5 text-[13.5px] font-semibold bg-card hover:bg-honey transition">{label}</Link>
+          ))}
+        </div>
+      </section>
       <section className="mt-12 max-w-[720px] text-[15px] text-ink2 leading-relaxed">
         <h2 className="font-display text-2xl font-semibold mb-3 text-ink">Pricing from the income you want, not the market average</h2>
         <p className="mb-3">Most freelancers pick a rate by copying peers, then wonder why they&apos;re always short. The reliable method is to start from the take-home you need, gross it up for the taxes you&apos;ll owe, add your annual business costs, and divide across the hours you can realistically bill — which is far fewer than the hours you work.</p>
