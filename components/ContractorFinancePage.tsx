@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Calculator, Check, Clock3 } from "lucide-react";
 import { CalculatorForPath } from "@/components/ContractorCalculators";
+import ContractorFinanceSidebar from "@/components/ContractorFinanceSidebar";
 import {
   FinancialDisclaimer,
   LastReviewed,
@@ -34,6 +35,8 @@ export default function ContractorFinancePage({ content }: { content: Contractor
       <FaqJsonLd items={content.faq} />
       <BreadcrumbJsonLd items={breadcrumbs} />
 
+      <div className={hasCalculator ? "lg:grid lg:grid-cols-[minmax(0,1fr)_240px] lg:gap-6 items-start" : ""}>
+        <div className="min-w-0">
       <section className="max-w-[760px] mb-7">
         {content.path !== "/contractor-finance" && (
           <Link href="/contractor-finance" className="text-[13px] text-muted hover:text-ink">
@@ -48,7 +51,10 @@ export default function ContractorFinancePage({ content }: { content: Contractor
       </section>
 
       {hasCalculator ? (
-        <CalculatorForPath path={content.path} />
+        <>
+          <CalculatorForPath path={content.path} />
+          <ContractorFinanceSidebar currentPath={content.path} variant="mobile" />
+        </>
       ) : (
         <section aria-labelledby="tool-heading" className="max-w-[820px] bg-card border-2 border-ink rounded-xl2 shadow-hard p-5 sm:p-7">
           <div className="flex items-start gap-4">
@@ -131,6 +137,9 @@ export default function ContractorFinancePage({ content }: { content: Contractor
           ))}
         </div>
       </section>
+        </div>
+        {hasCalculator && <ContractorFinanceSidebar currentPath={content.path} variant="desktop" />}
+      </div>
     </div>
   );
 }
