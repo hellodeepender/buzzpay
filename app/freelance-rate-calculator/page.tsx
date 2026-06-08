@@ -1,13 +1,20 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import RateCalculator from "@/components/RateCalculator";
-import { WebAppJsonLd, FaqJsonLd } from "@/components/JsonLd";
+import { BreadcrumbJsonLd, WebAppJsonLd, FaqJsonLd } from "@/components/JsonLd";
+import {
+  FinancialDisclaimer,
+  LastReviewed,
+  Methodology,
+  Sources,
+} from "@/components/CalculatorTrust";
+import { createMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = createMetadata({
   title: "Freelance Rate Calculator — what should you charge per hour?",
   description: "Free calculator that works backwards from your desired take-home income, taxes, and expenses to the hourly rate you actually need to charge.",
-  alternates: { canonical: "/freelance-rate-calculator" },
-};
+  path: "/freelance-rate-calculator",
+  image: "/freelance-rate-calculator/opengraph-image",
+});
 
 const faq = [
   { q: "How do I calculate my freelance hourly rate?", a: "Add the take-home income you want plus your business expenses, divide by one minus your tax rate to get the revenue you must bill, then divide by your realistic billable hours per year." },
@@ -24,6 +31,10 @@ export default function Page() {
       <WebAppJsonLd name="Freelance Rate Calculator" url="https://www.buzzpay.app/freelance-rate-calculator"
         description="Calculate the hourly rate you need from your take-home income goal." />
       <FaqJsonLd items={faq} />
+      <BreadcrumbJsonLd items={[
+        { name: "Home", path: "/" },
+        { name: "Freelance Rate Calculator", path: "/freelance-rate-calculator" },
+      ]} />
       <section className="max-w-[680px] mb-[22px]">
         <h1 className="font-display font-semibold text-[clamp(28px,4vw,40px)] leading-[1.08] tracking-tight mb-2">
           What should you <em className="italic text-honeyDeep">charge per hour?</em>
@@ -31,6 +42,19 @@ export default function Page() {
         <p className="text-ink2 text-base">Work backwards from the income you actually want to take home — after taxes, expenses, and the hours you can&apos;t bill.</p>
       </section>
       <RateCalculator />
+      <FinancialDisclaimer>
+        This result is a planning estimate based on the tax rate, expenses, and billable hours you enter. It does not calculate your actual federal, state, local, or self-employment tax liability.
+      </FinancialDisclaimer>
+      <LastReviewed date="2026-06-08" />
+      <Methodology>
+        <p>
+          The calculator estimates required annual billings by combining the take-home target and annual business expenses, grossing that figure up by the entered tax rate, and dividing it by annual billable hours. The displayed hourly rate is rounded up to the next whole dollar.
+        </p>
+      </Methodology>
+      <Sources items={[
+        { name: "IRS Self-Employed Individuals Tax Center", href: "https://www.irs.gov/businesses/small-businesses-self-employed/self-employed-individuals-tax-center", note: "Federal self-employment and estimated-tax guidance" },
+        { name: "IRS Publication 505", href: "https://www.irs.gov/publications/p505", note: "Tax withholding and estimated-tax guidance" },
+      ]} />
       <section className="mt-10 max-w-[720px]">
         <h2 className="font-display text-xl font-semibold mb-3">Rates by profession</h2>
         <div className="flex flex-wrap gap-2">

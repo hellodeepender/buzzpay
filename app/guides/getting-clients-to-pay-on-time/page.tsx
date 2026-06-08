@@ -1,12 +1,12 @@
-import type { Metadata } from "next";
 import Link from "next/link";
-import { FaqJsonLd } from "@/components/JsonLd";
+import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/JsonLd";
+import { createMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = createMetadata({
   title: "How to Get Clients to Pay Invoices on Time (Freelancer's Guide)",
   description: "A freelancer's guide to getting paid on time — set terms that prevent late payment, send invoices that get paid faster, and use a polite follow-up cadence that actually works.",
-  alternates: { canonical: "/guides/getting-clients-to-pay-on-time" },
-};
+  path: "/guides/getting-clients-to-pay-on-time",
+});
 
 const faq = [
   { q: "How do I get a client to pay an overdue invoice?", a: "Send a short, polite reminder that restates the invoice number, amount, and original due date, and gives one clear next step — a payment link or your details. Keep the tone matter-of-fact, not apologetic. If it's well overdue and you set late-fee terms, reference them. Most late payments are oversight, not refusal, so a calm nudge usually works." },
@@ -19,6 +19,10 @@ export default function Page() {
   return (
     <div className="py-2">
       <FaqJsonLd items={faq} />
+      <BreadcrumbJsonLd items={[
+        { name: "Home", path: "/" },
+        { name: "Getting Clients to Pay on Time", path: "/guides/getting-clients-to-pay-on-time" },
+      ]} />
       <section className="max-w-[680px] mb-[22px]">
         <h1 className="font-display font-semibold text-[clamp(28px,4vw,40px)] leading-[1.08] tracking-tight mb-2">
           How to get clients to <em className="italic text-honeyDeep">pay on time</em>

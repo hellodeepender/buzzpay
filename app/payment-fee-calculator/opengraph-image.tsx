@@ -1,4 +1,5 @@
 import { ogImage, ogSize } from "@/lib/og-image";
+export const runtime = "edge";
 export const size = ogSize;
 export const contentType = "image/png";
 export const alt = "buzzpay Payment Fee Calculator";

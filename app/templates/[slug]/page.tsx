@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { templates } from "@/lib/templates";
 import { money } from "@/lib/format";
-import { WebAppJsonLd } from "@/components/JsonLd";
+import { BreadcrumbJsonLd, WebAppJsonLd } from "@/components/JsonLd";
+import { createMetadata } from "@/lib/seo";
 
 export const dynamicParams = false;
 
@@ -14,7 +15,11 @@ export function generateStaticParams() {
 export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
   const t = templates[params.slug];
   if (!t) return {};
-  return { title: t.title, description: t.description, alternates: { canonical: `/templates/${params.slug}` } };
+  return createMetadata({
+    title: t.title,
+    description: t.description,
+    path: `/templates/${params.slug}`,
+  });
 }
 
 export default function Page({ params }: { params: { slug: string } }) {
@@ -29,6 +34,11 @@ export default function Page({ params }: { params: { slug: string } }) {
   return (
     <div className="py-2">
       <WebAppJsonLd name={`${t.name} Invoice Template`} url={url} description={t.description} />
+      <BreadcrumbJsonLd items={[
+        { name: "Home", path: "/" },
+        { name: "Invoice Templates", path: "/templates" },
+        { name: `${t.name} Invoice Template`, path: `/templates/${t.slug}` },
+      ]} />
       <section className="max-w-[680px] mb-[22px]">
         <Link href="/templates" className="text-[13px] text-muted hover:text-ink">← All templates</Link>
         <h1 className="font-display font-semibold text-[clamp(28px,4vw,40px)] leading-[1.08] tracking-tight mb-2 mt-2">

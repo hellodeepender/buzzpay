@@ -1,5 +1,10 @@
-import type { Metadata } from "next";
-export const metadata: Metadata = { title: "About", description: "About buzzpay — free tools to help freelancers and small businesses get paid." };
+import { createMetadata } from "@/lib/seo";
+
+export const metadata = createMetadata({
+  title: "About",
+  description: "About buzzpay — free tools to help freelancers and small businesses get paid.",
+  path: "/about",
+});
 export default function Page() {
   return (
     <div className="py-2 max-w-[680px]">

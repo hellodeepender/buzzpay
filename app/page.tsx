@@ -1,5 +1,17 @@
 import Link from "next/link";
 import { Percent, FileText, Timer } from "lucide-react";
+import { createMetadata, DEFAULT_DESCRIPTION } from "@/lib/seo";
+
+const homeMetadata = createMetadata({
+  title: "buzzpay — free tools to get paid",
+  description: DEFAULT_DESCRIPTION,
+  path: "/",
+});
+
+export const metadata = {
+  ...homeMetadata,
+  title: { absolute: "buzzpay — free tools to get paid" },
+};
 
 const tools = [
   { href: "/payment-fee-calculator", Icon: Percent, title: "Payment Fee Calculator", desc: "See what you keep after Stripe, PayPal, or Square fees — or work backwards to what you should charge." },

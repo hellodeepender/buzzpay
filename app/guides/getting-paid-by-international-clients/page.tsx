@@ -1,12 +1,12 @@
-import type { Metadata } from "next";
 import Link from "next/link";
-import { FaqJsonLd } from "@/components/JsonLd";
+import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/JsonLd";
+import { createMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = createMetadata({
   title: "How to Get Paid by International Clients (Fees & Best Methods)",
   description: "A freelancer's guide to getting paid by overseas clients — the real cost of payment fees and exchange-rate markups, your options compared, and how to keep more of every invoice.",
-  alternates: { canonical: "/guides/getting-paid-by-international-clients" },
-};
+  path: "/guides/getting-paid-by-international-clients",
+});
 
 const faq = [
   { q: "What's the cheapest way to get paid by international clients?", a: "For regular payments, a multi-currency account (such as Wise or Payoneer) that gives you local account details and converts near the mid-market rate is usually cheapest. For one-off large sums, a bank wire can work despite higher fixed fees. Compare the all-in cost — fee plus exchange-rate markup — not just the headline fee." },
@@ -19,6 +19,10 @@ export default function Page() {
   return (
     <div className="py-2">
       <FaqJsonLd items={faq} />
+      <BreadcrumbJsonLd items={[
+        { name: "Home", path: "/" },
+        { name: "Getting Paid by International Clients", path: "/guides/getting-paid-by-international-clients" },
+      ]} />
       <section className="max-w-[680px] mb-[22px]">
         <h1 className="font-display font-semibold text-[clamp(28px,4vw,40px)] leading-[1.08] tracking-tight mb-2">
           How to get paid by <em className="italic text-honeyDeep">international clients</em>

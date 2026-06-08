@@ -1,16 +1,21 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { templateList } from "@/lib/templates";
+import { createMetadata } from "@/lib/seo";
+import { BreadcrumbJsonLd } from "@/components/JsonLd";
 
-export const metadata: Metadata = {
+export const metadata = createMetadata({
   title: "Free Invoice Templates — no signup, download as PDF",
   description: "Free invoice templates for freelancers, consultants, contractors, designers, and developers. Fill in your browser, add a logo, and download a PDF — no signup.",
-  alternates: { canonical: "/templates" },
-};
+  path: "/templates",
+});
 
 export default function Page() {
   return (
     <div className="py-2">
+      <BreadcrumbJsonLd items={[
+        { name: "Home", path: "/" },
+        { name: "Invoice Templates", path: "/templates" },
+      ]} />
       <section className="max-w-[680px] mb-7">
         <h1 className="font-display font-semibold text-[clamp(28px,4vw,40px)] leading-[1.08] tracking-tight mb-2">
           Free <em className="italic text-honeyDeep">invoice templates</em>

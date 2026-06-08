@@ -1,13 +1,14 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import InvoiceGenerator from "@/components/InvoiceGenerator";
-import { WebAppJsonLd, FaqJsonLd } from "@/components/JsonLd";
+import { BreadcrumbJsonLd, WebAppJsonLd, FaqJsonLd } from "@/components/JsonLd";
+import { createMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = createMetadata({
   title: "Free Invoice Generator — create & download a PDF invoice",
   description: "Create a professional invoice online for free and save it as a PDF. No signup. Built for freelancers and small businesses.",
-  alternates: { canonical: "/invoice-generator" },
-};
+  path: "/invoice-generator",
+  image: "/invoice-generator/opengraph-image",
+});
 
 const faq = [
   { q: "Is this invoice generator really free?", a: "Yes. You can create and download invoices as PDFs with no signup and no watermark hassle." },
@@ -25,6 +26,10 @@ export default function Page() {
       <WebAppJsonLd name="Invoice Generator" url="https://www.buzzpay.app/invoice-generator"
         description="Create and download professional PDF invoices for free." />
       <FaqJsonLd items={faq} />
+      <BreadcrumbJsonLd items={[
+        { name: "Home", path: "/" },
+        { name: "Invoice Generator", path: "/invoice-generator" },
+      ]} />
       <section className="max-w-[680px] mb-[22px]">
         <h1 className="font-display font-semibold text-[clamp(28px,4vw,40px)] leading-[1.08] tracking-tight mb-2">
           Send a <em className="italic text-honeyDeep">clean invoice</em> in 60 seconds.

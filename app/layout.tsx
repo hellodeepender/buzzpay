@@ -2,13 +2,26 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { JsonLd } from "@/components/JsonLd";
+import {
+  createMetadata,
+  DEFAULT_DESCRIPTION,
+  organizationJsonLd,
+  websiteJsonLd,
+} from "@/lib/seo";
 import { Analytics } from "@vercel/analytics/next";
 
+const rootMetadata = createMetadata({
+  title: "buzzpay — free tools to get paid",
+  description: DEFAULT_DESCRIPTION,
+  path: "/",
+});
+
 export const metadata: Metadata = {
+  ...rootMetadata,
   metadataBase: new URL("https://www.buzzpay.app"),
   title: { default: "buzzpay — free tools to get paid", template: "%s · buzzpay" },
-  description: "Free calculators for freelancers and small businesses: payment fee calculator, invoice generator, and freelance rate calculator.",
-  openGraph: { type: "website", siteName: "buzzpay", url: "https://www.buzzpay.app" },
+  description: DEFAULT_DESCRIPTION,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -23,6 +36,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="font-sans leading-relaxed">
+        <JsonLd data={organizationJsonLd()} />
+        <JsonLd data={websiteJsonLd()} />
         <div className="max-w-[1040px] mx-auto px-5">
           <Header />
           <main>{children}</main>

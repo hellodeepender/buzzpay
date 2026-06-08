@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import FeeCalculator from "@/components/FeeCalculator";
-import { WebAppJsonLd, FaqJsonLd } from "@/components/JsonLd";
+import { BreadcrumbJsonLd, WebAppJsonLd, FaqJsonLd } from "@/components/JsonLd";
+import { createMetadata } from "@/lib/seo";
 
 export const dynamicParams = false;
 
@@ -61,7 +62,12 @@ export function generateStaticParams() {
 export function generateMetadata({ params }: { params: { processor: string } }): Metadata {
   const p = processors[params.processor as keyof typeof processors];
   if (!p) return {};
-  return { title: p.title, description: p.description, alternates: { canonical: `/payment-fee-calculator/${params.processor}` } };
+  return createMetadata({
+    title: p.title,
+    description: p.description,
+    path: `/payment-fee-calculator/${params.processor}`,
+    image: "/payment-fee-calculator/opengraph-image",
+  });
 }
 
 export default function Page({ params }: { params: { processor: string } }) {
@@ -72,6 +78,11 @@ export default function Page({ params }: { params: { processor: string } }) {
     <div className="py-2">
       <WebAppJsonLd name={`${p.name} Fee Calculator`} url={url} description={p.description} />
       <FaqJsonLd items={p.faq} />
+      <BreadcrumbJsonLd items={[
+        { name: "Home", path: "/" },
+        { name: "Payment Fee Calculator", path: "/payment-fee-calculator" },
+        { name: `${p.name} Fee Calculator`, path: `/payment-fee-calculator/${params.processor}` },
+      ]} />
       <section className="max-w-[680px] mb-[22px]">
         <Link href="/payment-fee-calculator" className="text-[13px] text-muted hover:text-ink">← All payment fees</Link>
         <h1 className="font-display font-semibold text-[clamp(28px,4vw,40px)] leading-[1.08] tracking-tight mb-2 mt-2">

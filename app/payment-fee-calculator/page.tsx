@@ -1,13 +1,20 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import FeeCalculator from "@/components/FeeCalculator";
-import { WebAppJsonLd, FaqJsonLd } from "@/components/JsonLd";
+import { BreadcrumbJsonLd, WebAppJsonLd, FaqJsonLd } from "@/components/JsonLd";
+import {
+  FinancialDisclaimer,
+  LastReviewed,
+  Methodology,
+  Sources,
+} from "@/components/CalculatorTrust";
+import { createMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
+export const metadata = createMetadata({
   title: "Payment Fee Calculator — Stripe, PayPal & Square",
   description: "Free calculator to see exactly how much you receive after Stripe, PayPal, or Square fees. Or reverse it: find what to charge to receive a target amount.",
-  alternates: { canonical: "/payment-fee-calculator" },
-};
+  path: "/payment-fee-calculator",
+  image: "/payment-fee-calculator/opengraph-image",
+});
 
 const faq = [
   { q: "How much does Stripe charge in fees?", a: "Stripe's common U.S. standard online rate is 2.9% plus $0.30 per transaction. Rates vary by country, card type, and negotiated pricing, so this calculator lets you edit them." },
@@ -25,6 +32,10 @@ export default function Page() {
       <WebAppJsonLd name="Payment Fee Calculator" url="https://www.buzzpay.app/payment-fee-calculator"
         description="Calculate net payout after Stripe, PayPal, and Square fees." />
       <FaqJsonLd items={faq} />
+      <BreadcrumbJsonLd items={[
+        { name: "Home", path: "/" },
+        { name: "Payment Fee Calculator", path: "/payment-fee-calculator" },
+      ]} />
       <section className="max-w-[680px] mb-[22px]">
         <h1 className="font-display font-semibold text-[clamp(28px,4vw,40px)] leading-[1.08] tracking-tight mb-2">
           How much will you <em className="italic text-honeyDeep">actually keep?</em>
@@ -32,6 +43,20 @@ export default function Page() {
         <p className="text-ink2 text-base">See your real payout after Stripe, PayPal, or Square fees — or work backwards to find what to charge so you receive the exact amount you need.</p>
       </section>
       <FeeCalculator />
+      <FinancialDisclaimer>
+        Processor pricing varies by payment method, country, card type, and account agreement. Confirm the current rate with your processor before making pricing decisions.
+      </FinancialDisclaimer>
+      <LastReviewed date="2026-06-08" />
+      <Methodology>
+        <p>
+          Forward mode calculates the fee as the transaction amount multiplied by the percentage rate, plus the fixed fee. Reverse mode solves for the gross charge required to leave the requested net amount after both fee components are deducted.
+        </p>
+      </Methodology>
+      <Sources items={[
+        { name: "Stripe pricing", href: "https://stripe.com/us/pricing", note: "Official U.S. card pricing" },
+        { name: "PayPal merchant fees", href: "https://www.paypal.com/us/webapps/mpp/merchant-fees", note: "Official U.S. commercial transaction fees" },
+        { name: "Square pricing", href: "https://squareup.com/us/en/pricing", note: "Official U.S. payment processing pricing" },
+      ]} />
       <div className="mt-4 text-[13.5px] text-ink2">Calculate fees for a specific processor:{" "}
         <Link href="/payment-fee-calculator/stripe" className="text-honeyDeep font-semibold">Stripe</Link> ·{" "}
         <Link href="/payment-fee-calculator/paypal" className="text-honeyDeep font-semibold">PayPal</Link> ·{" "}

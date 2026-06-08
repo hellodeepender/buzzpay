@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import RateCalculator from "@/components/RateCalculator";
-import { WebAppJsonLd, FaqJsonLd } from "@/components/JsonLd";
+import { BreadcrumbJsonLd, WebAppJsonLd, FaqJsonLd } from "@/components/JsonLd";
+import { createMetadata } from "@/lib/seo";
 
 export const dynamicParams = false;
 
@@ -93,7 +94,12 @@ export function generateStaticParams() {
 export function generateMetadata({ params }: { params: { profession: string } }): Metadata {
   const p = professions[params.profession];
   if (!p) return {};
-  return { title: p.title, description: p.description, alternates: { canonical: `/freelance-rate-calculator/${params.profession}` } };
+  return createMetadata({
+    title: p.title,
+    description: p.description,
+    path: `/freelance-rate-calculator/${params.profession}`,
+    image: "/freelance-rate-calculator/opengraph-image",
+  });
 }
 
 export default function Page({ params }: { params: { profession: string } }) {
@@ -104,6 +110,11 @@ export default function Page({ params }: { params: { profession: string } }) {
     <div className="py-2">
       <WebAppJsonLd name={`Freelance ${p.name} Rate Calculator`} url={url} description={p.description} />
       <FaqJsonLd items={p.faq} />
+      <BreadcrumbJsonLd items={[
+        { name: "Home", path: "/" },
+        { name: "Freelance Rate Calculator", path: "/freelance-rate-calculator" },
+        { name: `${p.name} Rate Calculator`, path: `/freelance-rate-calculator/${params.profession}` },
+      ]} />
       <section className="max-w-[680px] mb-[22px]">
         <Link href="/freelance-rate-calculator" className="text-[13px] text-muted hover:text-ink">← Freelance rate calculator</Link>
         <h1 className="font-display font-semibold text-[clamp(28px,4vw,40px)] leading-[1.08] tracking-tight mb-2 mt-2">
