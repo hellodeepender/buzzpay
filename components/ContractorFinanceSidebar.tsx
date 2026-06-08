@@ -57,6 +57,7 @@ function SidebarContent({
           calculatorSlug={currentPath.replace(/^\//, "")}
           calculatorName={calculator.sidebarTitle}
           instanceId={instanceId}
+          pagePath={currentPath}
         />
       )}
 

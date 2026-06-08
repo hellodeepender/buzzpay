@@ -1,4 +1,8 @@
 import { NextResponse } from "next/server";
+import {
+  getSupabaseServerClient,
+  isSupabaseConfigured,
+} from "@/lib/supabase/server";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const calculators = {
@@ -14,6 +18,7 @@ type ReportRequestPayload = {
   firstName?: unknown;
   calculatorSlug?: unknown;
   calculatorName?: unknown;
+  pagePath?: unknown;
   resultSnapshot?: unknown;
 };
 
@@ -55,6 +60,7 @@ export async function POST(request: Request) {
   const firstName = sanitizeString(payload.firstName, 80);
   const calculatorSlug = sanitizeString(payload.calculatorSlug, 80);
   const calculatorName = sanitizeString(payload.calculatorName, 120);
+  const pagePath = sanitizeString(payload.pagePath, 160);
   const resultSnapshot = sanitizeSnapshot(payload.resultSnapshot);
 
   if (!emailPattern.test(email)) {
@@ -70,31 +76,65 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "Calculator details are invalid." }, { status: 400 });
   }
 
+  const expectedPagePath = `/${calculatorSlug}`;
+  if (pagePath && pagePath !== expectedPagePath) {
+    return NextResponse.json({ ok: false, error: "Page details are invalid." }, { status: 400 });
+  }
+
   const reportRequest = {
     email,
     firstName: firstName || undefined,
     calculatorSlug,
     calculatorName: expectedCalculatorName,
+    pagePath: pagePath || expectedPagePath,
     resultSnapshot,
     requestedAt: new Date().toISOString(),
   };
 
-  // TODO: Store report leads in Supabase once lead storage is configured.
-  // TODO: Send report emails through Resend once email templates and API keys are configured.
-  // TODO: Sync consenting subscribers to ConvertKit or Beehiiv once newsletter routing is chosen.
-  if (
-    process.env.NODE_ENV === "development" &&
-    !process.env.SUPABASE_URL &&
-    !process.env.RESEND_API_KEY &&
-    !process.env.CONVERTKIT_API_KEY &&
-    !process.env.BEEHIIV_API_KEY
-  ) {
-    console.info("[report-request]", {
+  if (isSupabaseConfigured()) {
+    try {
+      const supabase = getSupabaseServerClient();
+      const { error } = await supabase!.from("report_requests").insert({
+        email: reportRequest.email,
+        first_name: reportRequest.firstName ?? null,
+        calculator_slug: reportRequest.calculatorSlug,
+        calculator_name: reportRequest.calculatorName,
+        page_path: reportRequest.pagePath,
+        result_snapshot: reportRequest.resultSnapshot ?? null,
+      });
+
+      if (error) {
+        console.error("[report-request] Supabase insert failed", {
+          code: error.code,
+          calculatorSlug,
+        });
+        return NextResponse.json(
+          { ok: false, error: "We could not save your request. Please try again." },
+          { status: 503 },
+        );
+      }
+    } catch (error) {
+      console.error("[report-request] Supabase request failed", {
+        calculatorSlug,
+        errorType: error instanceof Error ? error.name : "unknown",
+      });
+      return NextResponse.json(
+        { ok: false, error: "We could not save your request. Please try again." },
+        { status: 503 },
+      );
+    }
+  } else if (process.env.NODE_ENV === "development") {
+    console.info("[report-request] Supabase not configured", {
       ...reportRequest,
       resultSnapshot: undefined,
       resultSnapshotFields: resultSnapshot ? Object.keys(resultSnapshot) : [],
     });
   }
+
+  // TODO: Deliver the requested report email after a provider and template are configured.
+  // TODO: Sync opted-in leads to the selected newsletter provider.
+  // TODO: Add unsubscribe handling before sending recurring marketing email.
+  // TODO: Store explicit consent text, timestamp, and policy version.
 
   return NextResponse.json({ ok: true });
 }

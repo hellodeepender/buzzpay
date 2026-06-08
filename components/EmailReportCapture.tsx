@@ -12,11 +12,13 @@ export default function EmailReportCapture({
   calculatorSlug,
   calculatorName,
   instanceId,
+  pagePath,
   resultSnapshot,
 }: {
   calculatorSlug: string;
   calculatorName: string;
   instanceId: string;
+  pagePath?: string;
   resultSnapshot?: ReportSnapshot;
 }) {
   const [email, setEmail] = useState("");
@@ -49,6 +51,7 @@ export default function EmailReportCapture({
           firstName: trimmedName || undefined,
           calculatorSlug,
           calculatorName,
+          pagePath,
           resultSnapshot,
         }),
       });
