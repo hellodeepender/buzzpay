@@ -9,7 +9,7 @@ const content: ContractorPageContent = {
   description: "Compare a W2 job with a C2C contract using salary, benefits, taxes, business costs, unpaid time, and contract risk. Includes examples and methodology.",
   intro: "A C2C rate is not directly comparable with a W2 wage. Build the comparison from total economic value, then account for business costs, unpaid time, tax administration, and contract risk.",
   toolTitle: "W2 vs C2C comparison worksheet",
-  toolDescription: "The full calculator is planned. This worksheet shows the inputs a responsible comparison must include instead of multiplying salary by a single shortcut.",
+  toolDescription: "Compare retained W2 economic value with C2C cash after entered expenses, taxes, utilization, and a contract-risk reserve.",
   toolInputs: [
     "W2 salary, bonus, and employer retirement contribution",
     "Employer-paid health coverage and other benefits",

@@ -18,13 +18,13 @@ const content: ContractorPageContent = {
     "Test whether S-corporation savings survive compliance costs",
     "Document assumptions for review with professional advisers",
   ],
-  toolOutput: "a connected planning path across the five contractor-finance guides, with interactive calculators added only after their tax data and formulas are validated.",
+  toolOutput: "a connected planning path across five live educational calculators and their supporting contractor-finance guides.",
   sections: [
     {
       heading: "Contractor finance begins before the first invoice",
       paragraphs: [
         "Independent work changes more than the name on a paycheck. A contractor becomes responsible for pricing, collections, business expenses, insurance, tax payments, records, unpaid time, and periods without client revenue. These obligations are connected. A rate that ignores downtime creates a tax-reserve problem; an entity election made before profit is stable can add costs without producing meaningful savings; a contract comparison that ignores benefits can make a weak offer look attractive.",
-        "The purpose of this section is to make those dependencies visible. Buzzpay's contractor-finance pages use explicit assumptions, official primary sources, calculation methodology, review dates, and prominent limitations. The initial P1 tools are planning previews rather than unsupported calculators. That distinction matters for financial content: a precise-looking result is not useful when the underlying tax year, household facts, entity treatment, or worker classification is unknown.",
+        "The purpose of this section is to make those dependencies visible. Buzzpay's contractor-finance pages use explicit assumptions, official primary sources, calculation methodology, review dates, and prominent limitations. The calculators expose their inputs and breakdowns rather than presenting unsupported precision. That distinction matters for financial content: a result is not useful when the underlying tax year, household facts, entity treatment, or worker classification is hidden.",
       ],
     },
     {
@@ -82,7 +82,7 @@ const content: ContractorPageContent = {
   ],
   faq: [
     { q: "Which contractor-finance tool should I use first?", a: "Start with the decision you are currently making. Compare offers with W2 versus C2C, set pricing with the contractor-rate guide, estimate taxes from net profit, and evaluate entity elections only after business economics are clear." },
-    { q: "Are the calculators live yet?", a: "The P1 pages contain tool previews and complete methodology, examples, FAQs, and sources. Interactive calculators will be added only after formulas, tax-year data, validation, and tests are implemented." },
+    { q: "Are the calculators live?", a: "Yes. The five contractor-finance pages include interactive educational calculators with bounded inputs, visible assumptions, calculation breakdowns, methodology, sources, and lightweight formula tests." },
     { q: "Does forming an LLC make me an independent contractor?", a: "No. Worker classification depends on the actual relationship, including control and financial independence. An entity can support genuine business operations but does not override the facts." },
     { q: "Should every profitable contractor elect S-corporation treatment?", a: "No. Eligibility, reasonable salary, profit stability, state costs, payroll, professional fees, and administrative capacity all affect whether an election produces a net benefit." },
     { q: "Will Buzzpay add state tax pages?", a: "Not in this phase. State pages should be created only after verified, versioned state data and a reliable review process exist." },
@@ -90,7 +90,7 @@ const content: ContractorPageContent = {
   ],
   methodology: [
     "The hub organizes contractor decisions by dependency: compensation and classification first, pricing and cash flow second, tax estimation third, and entity optimization after stable profit. Each linked guide uses official federal sources and separates known calculation inputs from facts requiring legal or professional judgment.",
-    "No state-specific outputs or interactive tax calculations are included in P1. Tool previews document the future calculation contract so implementation can later be versioned, tested, and reviewed without changing the editorial standard.",
+    "No state-specific tax engine is included. Federal employment-tax calculations use versioned 2026 constants, while income-tax and state-tax estimates require user-entered blended rates so the tools do not imply return-preparation accuracy.",
   ],
   sources: [
     { name: "IRS: Independent contractor defined", href: "https://www.irs.gov/businesses/small-businesses-self-employed/independent-contractor-defined", note: "Worker status and federal tax responsibilities" },

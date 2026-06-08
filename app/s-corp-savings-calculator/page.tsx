@@ -9,7 +9,7 @@ const content: ContractorPageContent = {
   description: "Estimate potential S-corporation savings after reasonable salary, payroll taxes, state fees, payroll, accounting, and compliance costs.",
   intro: "An S-corporation election can change how an eligible business owner's compensation is exposed to employment taxes, but the useful question is net savings after salary and compliance—not distributions multiplied by a tax rate.",
   toolTitle: "S-corporation election planning model",
-  toolDescription: "The interactive calculator is planned. Its model will require reasonable compensation and recurring compliance costs before showing any potential savings.",
+  toolDescription: "Compare a baseline self-employment-tax estimate with payroll taxes on entered owner salary after payroll, professional, and state costs.",
   toolInputs: [
     "Business profit before owner wages and payroll costs",
     "Supportable reasonable salary for the owner's services",
@@ -96,14 +96,15 @@ const content: ContractorPageContent = {
     { q: "Can I make an S-corporation election retroactive?", a: "Election timing rules apply, and late-election relief may be available when requirements are satisfied. Do not assume retroactive treatment without confirming eligibility and filing procedure." },
   ],
   methodology: [
-    "The planned calculator will compare a baseline business-tax treatment with S-corporation treatment using profit before owner wages, a user-supported reasonable salary, payroll-tax components, and recurring compliance costs. State costs, retirement effects, and health-insurance handling will be explicit inputs or cautions rather than hidden assumptions.",
-    "The model will report gross tax difference, added operating cost, and net planning benefit separately. It will not choose a reasonable salary, determine eligibility, or characterize distributions as exempt from income tax.",
+    "The calculator compares a baseline self-employment-tax estimate with employment taxes on user-entered owner salary. It uses 2026 Social Security limits, applies the statutory net-earnings adjustment, and subtracts entered payroll, professional, and state costs from the gross employment-tax difference.",
+    "The result reports gross tax difference, added operating cost, and net planning benefit separately. It does not choose a reasonable salary, determine eligibility, model income tax on pass-through profit, or characterize distributions as exempt from income tax.",
   ],
   sources: [
     { name: "IRS: S corporation compensation and medical insurance issues", href: "https://www.irs.gov/businesses/small-businesses-self-employed/s-corporation-compensation-and-medical-insurance-issues", note: "Reasonable-compensation factors and shareholder rules" },
     { name: "IRS: S corporation employees, shareholders and corporate officers", href: "https://www.irs.gov/businesses/small-businesses-self-employed/s-corporation-employees-shareholders-and-corporate-officers", note: "Wage treatment for shareholder-employees" },
     { name: "IRS: About Form 2553", href: "https://www.irs.gov/forms-pubs/about-form-2553", note: "S-corporation election form and instructions" },
     { name: "IRS: Retirement plan FAQs for S corporations", href: "https://www.irs.gov/retirement-plans/retirement-plan-faqs-regarding-contributions-s-corporation", note: "W2 compensation and retirement contributions" },
+    { name: "SSA: 2026 contribution and benefit base", href: "https://www.ssa.gov/oact/cola/cbb.html", note: "Official 2026 Social Security wage base" },
   ],
 };
 

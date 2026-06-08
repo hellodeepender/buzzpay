@@ -9,7 +9,7 @@ const content: ContractorPageContent = {
   description: "Estimate a sustainable contractor hourly rate from salary goals, benefits, expenses, taxes, billable hours, unpaid time, and contract risk.",
   intro: "A sustainable contractor rate must fund compensation, benefits, overhead, nonbillable work, taxes, and gaps between contracts. Start with annual business economics, not a salary divided by 2,080.",
   toolTitle: "Contractor rate planning model",
-  toolDescription: "The interactive calculator is planned. These inputs define the rate model that will replace simplistic salary-to-hourly conversions.",
+  toolDescription: "Calculate a planning rate from annual cash needs, replacement benefits, expenses, tax reserve, and realistic billable capacity.",
   toolInputs: [
     "Target owner compensation and household cash goal",
     "Health coverage, retirement, insurance, and paid-time-off replacement",
@@ -89,7 +89,7 @@ const content: ContractorPageContent = {
     { q: "Can business expenses lower the rate I need?", a: "No. Deductibility may reduce taxable income, but the business still pays the expense. Necessary expenses increase the revenue the business must earn unless they also improve utilization or pricing enough to offset their cost." },
   ],
   methodology: [
-    "The planned calculator will use a revenue-requirement model: target owner compensation plus replacement benefits, operating expenses, professional fees, desired profit, and risk reserve. That total will be divided by realistic billable capacity to produce a rate floor and target. Taxes will be shown as a separate planning layer because personal and entity facts vary.",
+    "The calculator uses a revenue-requirement model: target take-home cash plus replacement benefits, operating expenses, and a profit or risk reserve. It grosses that amount up using the entered blended tax-reserve rate, then divides by realistic annual billable hours to produce an hourly planning floor.",
     "Examples intentionally avoid claiming a universal salary multiplier. The framework is designed to expose assumptions and support scenario testing rather than suggest that every contractor should charge the same premium.",
   ],
   sources: [

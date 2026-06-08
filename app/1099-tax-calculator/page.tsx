@@ -9,7 +9,7 @@ const content: ContractorPageContent = {
   description: "Plan 1099 contractor taxes using revenue, business expenses, self-employment tax, income tax, deductions, credits, and estimated payments.",
   intro: "A useful 1099 tax estimate starts with net business profit, calculates self-employment tax separately from income tax, and shows why filing status, other income, deductions, credits, and state rules matter.",
   toolTitle: "1099 contractor tax planning model",
-  toolDescription: "The interactive calculator is planned. It will separate business profit, self-employment tax, federal income tax, state assumptions, and payments already made.",
+  toolDescription: "Estimate net profit, 2026 self-employment tax, user-supplied federal and state income-tax reserves, and payments already made.",
   toolInputs: [
     "Gross self-employment revenue and expected business expenses",
     "Filing status, other household income, and qualifying deductions",
@@ -95,14 +95,15 @@ const content: ContractorPageContent = {
     { q: "Does this estimate include state tax?", a: "Not automatically. State and local obligations vary, so this phase treats them as separate assumptions and does not create state-specific pages." },
   ],
   methodology: [
-    "The planned estimator will calculate projected net business profit, self-employment tax under the selected tax year, federal income tax in the context of other household income, and payments already made. State and local amounts will remain explicit user inputs until a reviewed state-data system exists.",
-    "It will separate liability from payment timing, show assumptions, and provide a range when credits or deductions cannot be modeled reliably. It will not prepare a return, determine deductibility, or guarantee penalty protection.",
+    "The estimator calculates projected net business profit and 2026 self-employment tax, then applies user-entered blended federal and state income-tax rates. It subtracts payments already made only after estimating annual liability. State and local amounts remain explicit user assumptions because no state-specific tax engine is included.",
+    "It separates liability from payment timing and shows each component. It does not calculate tax brackets, QBI, credits, itemized deductions, retirement effects, local tax, or penalty safe harbors, and it does not prepare a return or determine deductibility.",
   ],
   sources: [
     { name: "IRS: Self-employed individuals tax center", href: "https://www.irs.gov/businesses/small-businesses-self-employed/self-employed-individuals-tax-center", note: "Federal filing, self-employment tax, and estimated payments" },
     { name: "IRS: Self-employment tax", href: "https://www.irs.gov/businesses/small-businesses-self-employed/self-employment-tax-social-security-and-medicare-taxes", note: "Social Security and Medicare tax rules" },
     { name: "IRS: Estimated taxes", href: "https://www.irs.gov/businesses/small-businesses-self-employed/estimated-taxes", note: "Payment requirements and calculation overview" },
     { name: "IRS Publication 505", href: "https://www.irs.gov/publications/p505", note: "Withholding and estimated-tax guidance" },
+    { name: "SSA: 2026 contribution and benefit base", href: "https://www.ssa.gov/oact/cola/cbb.html", note: "Official 2026 Social Security wage base" },
   ],
 };
 

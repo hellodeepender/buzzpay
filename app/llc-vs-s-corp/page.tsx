@@ -9,7 +9,7 @@ const content: ContractorPageContent = {
   description: "Understand LLC versus S-corporation terminology, default tax treatment, S elections, payroll, reasonable salary, compliance, and decision factors.",
   intro: "LLC and S corporation are not always competing choices. An LLC is created under state law, while S corporation usually describes a federal tax election that an eligible LLC or corporation may make.",
   toolTitle: "LLC and S-corporation decision worksheet",
-  toolDescription: "The decision tool is planned. It will separate legal structure, default federal classification, optional tax elections, ownership rules, and recurring administration.",
+  toolDescription: "Compare a simplified sole-owner default LLC tax-and-admin scenario with an S-corporation salary, payroll, and compliance scenario.",
   toolInputs: [
     "State of formation and annual entity obligations",
     "Number and type of owners",
@@ -97,13 +97,14 @@ const content: ContractorPageContent = {
   ],
   methodology: [
     "This guide separates state-law entity formation from federal tax classification, then compares default LLC treatment with an S-corporation election across ownership, payroll, filing, compensation, state cost, and operational dimensions. It does not rank one structure as universally superior.",
-    "The planned worksheet will identify decision dependencies and possible paths. It will not form an entity, test every eligibility rule, calculate state-specific taxes, or substitute for review of operating agreements and election filings.",
+    "The calculator compares estimated self-employment tax plus entered default-LLC administration costs with estimated employment tax on entered S-corporation salary plus payroll, professional, and state costs. It does not form an entity, test eligibility, calculate income tax, or substitute for review of operating agreements and election filings.",
   ],
   sources: [
     { name: "IRS: LLC filing as a corporation or partnership", href: "https://www.irs.gov/businesses/small-businesses-self-employed/llc-filing-as-a-corporation-or-partnership", note: "Default and elected federal classifications" },
     { name: "IRS Publication 3402: Taxation of Limited Liability Companies", href: "https://www.irs.gov/publications/p3402", note: "LLC federal tax overview" },
     { name: "IRS: About Form 8832", href: "https://www.irs.gov/forms-pubs/about-form-8832", note: "Entity classification election" },
     { name: "IRS: About Form 2553", href: "https://www.irs.gov/forms-pubs/about-form-2553", note: "S-corporation election" },
+    { name: "SSA: 2026 contribution and benefit base", href: "https://www.ssa.gov/oact/cola/cbb.html", note: "Official 2026 Social Security wage base used by the calculator" },
   ],
 };
 
