@@ -43,7 +43,7 @@ export default function Page() {
         <p>If you need to receive an exact amount (say a $100 deposit), don&apos;t just add the percentage back — that undershoots. Grossing up correctly means dividing by one minus the rate, which this calculator does for you in reverse mode.</p>
         <h2 className="font-display text-2xl font-semibold mt-9 mb-3 text-ink">Stripe vs PayPal vs Square: which keeps more?</h2>
         <p className="mb-3">Stripe and Square both commonly charge 2.9% + $0.30 on online card payments, while PayPal&apos;s goods-and-services rate is usually higher at 3.49% + $0.49. Which one actually costs you more depends on your transaction size: the fixed fee dominates small charges, while the percentage dominates large ones. Switch the presets above and watch the effective rate to see the real difference for the amounts you take.</p>
-        <p>Two costs people forget: refunds and international cards. Refunding a sale usually doesn&apos;t return the processor&apos;s fee, and cards issued abroad often add around 1% plus currency conversion. If your margins are thin, build both into your prices rather than discovering them later.</p>
+        <p>Two costs people forget: refunds and international cards. Refunding a sale usually doesn&apos;t return the processor&apos;s fee, and cards issued abroad often add around 1% plus currency conversion. If your margins are thin, build both into your prices rather than discovering them later. For more, see our guide to <Link href="/guides/getting-paid-by-international-clients" className="text-honeyDeep font-semibold">getting paid by international clients</Link>.</p>
       </Explainer>
     </div>
   );
