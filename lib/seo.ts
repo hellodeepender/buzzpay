@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const SITE_NAME = "buzzpay";
 export const SITE_URL = "https://www.buzzpay.app";
 export const DEFAULT_DESCRIPTION =
-  "Free calculators for freelancers and small businesses: payment fee calculator, invoice generator, and freelance rate calculator.";
+  "Free contractor finance and business tools for comparing work arrangements, planning rates and taxes, understanding business structures, calculating payment fees, and creating invoices.";
 
 export function absoluteUrl(path = "/") {
   if (/^https?:\/\//.test(path)) return path;

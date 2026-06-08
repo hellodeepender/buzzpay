@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Percent, FileText, Timer } from "lucide-react";
+import { Percent, FileText, Timer, BriefcaseBusiness } from "lucide-react";
 import { createMetadata, DEFAULT_DESCRIPTION } from "@/lib/seo";
+import { contractorFinanceLinks } from "@/lib/contractor-finance";
 
 const homeMetadata = createMetadata({
   title: "buzzpay — free tools to get paid",
@@ -31,6 +32,23 @@ export default function Home() {
           <Link href="/payment-fee-calculator" className="btn-honey">Calculate fees →</Link>
           <Link href="/invoice-generator" className="btn-ghost">Make an invoice</Link>
         </div>
+      </section>
+      <section className="mb-10 border-y-2 border-ink py-7" aria-labelledby="contractor-finance-heading">
+        <div className="flex items-start gap-4 mb-5">
+          <span className="icon-tile shrink-0"><BriefcaseBusiness size={25} /></span>
+          <div>
+            <h2 id="contractor-finance-heading" className="font-display text-2xl font-semibold">Contractor Finance</h2>
+            <p className="text-[14.5px] text-ink2 mt-1">Compare offers, set a sustainable rate, plan 1099 taxes, and understand LLC and S-corporation decisions.</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          {contractorFinanceLinks.map((item) => (
+            <Link key={item.href} href={item.href} className="bg-card border-2 border-ink rounded-[8px] p-3 text-ink no-underline hover:bg-paper2 transition">
+              <h3 className="font-display font-semibold text-[15px] leading-tight">{item.title}</h3>
+            </Link>
+          ))}
+        </div>
+        <Link href="/contractor-finance" className="inline-block mt-4 text-[13.5px] font-semibold text-honeyDeep">Explore Contractor Finance &rarr;</Link>
       </section>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-[22px]">
         {tools.map(({ href, Icon, title, desc }) => (

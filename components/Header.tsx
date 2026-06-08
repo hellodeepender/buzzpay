@@ -1,10 +1,10 @@
 import Link from "next/link";
 
 const tabs = [
+  { href: "/contractor-finance", label: "Contractor Finance", short: "Contractor" },
   { href: "/payment-fee-calculator", label: "Fee Calculator", short: "Fees" },
   { href: "/invoice-generator", label: "Invoice Generator", short: "Invoice" },
   { href: "/freelance-rate-calculator", label: "Rate Calculator", short: "Rate" },
-  { href: "/templates", label: "Templates", short: "Templates" },
 ];
 
 export default function Header() {
@@ -19,10 +19,10 @@ export default function Header() {
           Free tools to <b className="text-ink">get paid</b> — for freelancers &amp; small businesses
         </div>
       </div>
-      <nav className="flex gap-1 mt-6 mb-7 border-2 border-ink rounded-full bg-card p-[5px] shadow-hardsm">
+      <nav className="grid grid-cols-4 gap-1 mt-6 mb-7 border-2 border-ink rounded-[12px] sm:rounded-full bg-card p-[5px] shadow-hardsm">
         {tabs.map((t) => (
           <Link key={t.href} href={t.href}
-            className="flex-1 text-center font-semibold text-[13px] sm:text-[15px] text-ink2 py-2.5 sm:py-[11px] px-2 sm:px-2.5 rounded-full hover:text-ink transition whitespace-nowrap">
+            className="text-center font-semibold text-[12px] sm:text-[14px] text-ink2 py-2.5 sm:py-[11px] px-1 sm:px-2 rounded-[8px] sm:rounded-full hover:text-ink hover:bg-paper2 transition">
             <span className="sm:hidden">{t.short}</span>
             <span className="hidden sm:inline">{t.label}</span>
           </Link>
