@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { track } from "@vercel/analytics";
+import EmailReportCapture from "@/components/EmailReportCapture";
 import { contractorFinanceLinks } from "@/lib/contractor-finance";
 
 const nextSteps = ["Business banking", "Bookkeeping", "Payroll", "Talk to a CPA"];
@@ -12,15 +13,19 @@ function trackSidebarToolClick(label: string, href: string, currentPath: string)
   track("contractor_sidebar_tool_click", { label, href, currentPath });
 }
 
-function trackReportClick(currentPath: string) {
-  track("contractor_report_cta_click", { label: "Email me my contractor pay breakdown", currentPath });
-}
-
 function trackNextStepClick(label: string, currentPath: string) {
   track("contractor_next_step_click", { label, currentPath });
 }
 
-function SidebarContent({ currentPath }: { currentPath: string }) {
+function SidebarContent({
+  currentPath,
+  instanceId,
+}: {
+  currentPath: string;
+  instanceId: string;
+}) {
+  const calculator = contractorFinanceLinks.find((item) => item.href === currentPath);
+
   return (
     <div className="space-y-4">
       <section>
@@ -47,18 +52,13 @@ function SidebarContent({ currentPath }: { currentPath: string }) {
         </nav>
       </section>
 
-      <section className="border-2 border-dashed border-ink rounded-[8px] bg-paper2 p-4">
-        <h2 className="font-display text-lg font-semibold text-ink">Free Report</h2>
-        <p className="text-[13.5px] text-ink2 mt-1">Email me my contractor pay breakdown</p>
-        <button
-          type="button"
-          onClick={() => trackReportClick(currentPath)}
-          aria-disabled="true"
-          className="mt-3 w-full rounded-[8px] border-2 border-ink bg-card px-3 py-2 text-[13.5px] font-bold text-muted cursor-not-allowed"
-        >
-          Coming soon
-        </button>
-      </section>
+      {calculator && (
+        <EmailReportCapture
+          calculatorSlug={currentPath.replace(/^\//, "")}
+          calculatorName={calculator.sidebarTitle}
+          instanceId={instanceId}
+        />
+      )}
 
       <section>
         <h2 className="text-[12px] uppercase tracking-wide font-bold text-muted mb-2">Next Steps</h2>
@@ -93,7 +93,7 @@ export default function ContractorFinanceSidebar({
       {(variant === "desktop" || variant === "both") && (
         <aside className="hidden lg:block sticky top-5 self-start">
           <div className="bg-card border-2 border-ink rounded-xl2 shadow-hard p-4">
-            <SidebarContent currentPath={currentPath} />
+            <SidebarContent currentPath={currentPath} instanceId="desktop" />
           </div>
         </aside>
       )}
@@ -111,7 +111,7 @@ export default function ContractorFinanceSidebar({
           </button>
           {open && (
             <div className="border-t border-ink/20 p-4">
-              <SidebarContent currentPath={currentPath} />
+              <SidebarContent currentPath={currentPath} instanceId="mobile" />
             </div>
           )}
         </section>
