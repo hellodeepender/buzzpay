@@ -39,7 +39,7 @@ export default function Page() {
         <p>Keep numbers consistent (INV-001, INV-002) and send the invoice promptly; invoices sent the day work finishes get paid noticeably faster than ones that lag.</p>
         <h2 className="font-display text-2xl font-semibold mt-9 mb-3 text-ink">How to get invoices paid faster</h2>
         <p className="mb-3">Late payment is usually a friction problem, not a goodwill one. Make the due date explicit rather than vague, itemize clearly so nothing looks like a surprise, and offer a payment method that takes one step. A short, polite reminder a few days before the due date — and again just after — recovers most slow payers without awkwardness.</p>
-        <p>For repeat clients, agree terms up front and bill on a predictable schedule. The less a client has to think about how and when to pay, the sooner you see the money.</p>
+        <p>For repeat clients, agree terms up front and bill on a predictable schedule. The less a client has to think about how and when to pay, the sooner you see the money. For a deeper walkthrough, read our guide to <Link href="/guides/getting-clients-to-pay-on-time" className="text-honeyDeep font-semibold">getting clients to pay on time</Link>.</p>
         <h2 className="font-display text-2xl font-semibold mt-9 mb-4 text-ink">Frequently asked</h2>
         <div className="flex flex-col gap-4">{faq.map((f, i) => (<div key={i}><b className="text-ink">{f.q}</b><p className="mt-1">{f.a}</p></div>))}</div>
       </section>
