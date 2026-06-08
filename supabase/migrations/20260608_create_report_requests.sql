@@ -20,5 +20,14 @@ create index if not exists report_requests_created_at_idx
 
 alter table public.report_requests enable row level security;
 
+alter table public.report_requests
+  add column if not exists email_sent_at timestamp with time zone null;
+
+alter table public.report_requests
+  add column if not exists email_delivery_status text null;
+
+alter table public.report_requests
+  add column if not exists email_error text null;
+
 comment on table public.report_requests is
   'Calculator report requests. Server-side service-role writes only until explicit policies are added.';

@@ -23,6 +23,7 @@ export default function EmailReportCapture({
 }) {
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
+  const [honeypot, setHoneypot] = useState("");
   const [state, setState] = useState<SubmitState>("idle");
   const [error, setError] = useState("");
 
@@ -53,12 +54,22 @@ export default function EmailReportCapture({
           calculatorName,
           pagePath,
           resultSnapshot,
+          honeypot,
         }),
       });
       const payload = await response.json().catch(() => ({}));
 
       if (!response.ok || !payload?.ok) {
         throw new Error(payload?.error || "Something went wrong.");
+      }
+
+      const deliveryStatus = payload?.emailDeliveryStatus as string | undefined;
+      if (deliveryStatus === "sent") {
+        track("report_email_send_attempt", { calculatorSlug, calculatorName });
+        track("report_email_send_success", { calculatorSlug, calculatorName });
+      } else if (deliveryStatus === "failed") {
+        track("report_email_send_attempt", { calculatorSlug, calculatorName });
+        track("report_email_send_error", { calculatorSlug, calculatorName });
       }
 
       setState("success");
@@ -96,6 +107,16 @@ export default function EmailReportCapture({
       <form onSubmit={onSubmit} className="mt-3 space-y-2.5" noValidate>
         <input type="hidden" name="calculatorSlug" value={calculatorSlug} />
         <input type="hidden" name="calculatorName" value={calculatorName} />
+        <input
+          type="text"
+          name="website"
+          value={honeypot}
+          onChange={(event) => setHoneypot(event.target.value)}
+          autoComplete="off"
+          tabIndex={-1}
+          aria-hidden="true"
+          className="absolute left-[-10000px] top-auto h-px w-px overflow-hidden opacity-0"
+        />
         <div>
           <label className="sr-only" htmlFor={`report-email-${calculatorSlug}-${instanceId}`}>Email address</label>
           <input
