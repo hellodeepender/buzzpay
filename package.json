@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "test:calculators": "node scripts/test-calculators.mjs",
+    "test:report-request": "node scripts/test-report-request.mjs",
     "lint": "next lint"
   },
   "dependencies": {

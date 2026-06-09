@@ -42,6 +42,15 @@ export default function EmailReportCapture({
     setState("submitting");
     setError("");
     track("report_capture_submit", { calculatorSlug, calculatorName });
+    if (process.env.NODE_ENV === "development") {
+      console.info("[report-capture] submit", {
+        calculatorSlug,
+        calculatorName,
+        hasSnapshot: Boolean(resultSnapshot),
+        inputKeys: resultSnapshot?.keyInputs ? Object.keys(resultSnapshot.keyInputs) : [],
+        resultKeys: resultSnapshot?.keyResults ? Object.keys(resultSnapshot.keyResults) : [],
+      });
+    }
 
     try {
       const response = await fetch("/api/report-request", {

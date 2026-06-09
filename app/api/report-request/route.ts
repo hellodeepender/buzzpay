@@ -4,6 +4,7 @@ import {
   isSupabaseConfigured,
 } from "@/lib/supabase/server";
 import { getResendServerClient, isResendConfigured } from "@/lib/resend/server";
+import { renderReportEmail, type ReportSnapshot } from "@/lib/report-request-email";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const calculators = {
@@ -25,7 +26,6 @@ type ReportRequestPayload = {
 };
 
 type DeliveryStatus = "sent" | "skipped" | "failed";
-type ReportSnapshot = Record<string, unknown>;
 
 type RateBucket = { count: number; resetAt: number };
 const rateLimitStore = new Map<string, RateBucket>();
@@ -74,45 +74,6 @@ function sanitizeSnapshot(value: unknown) {
     return undefined;
   }
   return sanitized as ReportSnapshot;
-}
-
-function escapeHtml(value: string) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
-function formatSnapshotValue(value: unknown) {
-  if (value === null || value === undefined) return "—";
-  if (typeof value === "object") return JSON.stringify(value);
-  return String(value);
-}
-
-function renderSnapshotEntries(title: string, value: unknown) {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return "";
-  const entries = Object.entries(value as Record<string, unknown>).slice(0, 10);
-  if (!entries.length) return "";
-  return [
-    title,
-    ...entries.map(([key, entry]) => `- ${key}: ${formatSnapshotValue(entry)}`),
-  ].join("\n");
-}
-
-function renderSnapshotHtmlList(title: string, value: unknown) {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return "";
-  const entries = Object.entries(value as Record<string, unknown>).slice(0, 10);
-  if (!entries.length) return "";
-  return `
-    <p><strong>${escapeHtml(title)}</strong></p>
-    <ul>
-      ${entries
-        .map(([key, entry]) => `<li><strong>${escapeHtml(key)}:</strong> ${escapeHtml(formatSnapshotValue(entry))}</li>`)
-      .join("")}
-    </ul>
-  `;
 }
 
 function getClientIp(request: Request) {
@@ -171,99 +132,6 @@ async function updateReportRequestStatus({
   }
 }
 
-function renderReportEmail({
-  firstName,
-  calculatorName,
-  calculatorSlug,
-  pagePath,
-  resultSnapshot,
-}: {
-  firstName?: string;
-  calculatorName: string;
-  calculatorSlug: string;
-  pagePath: string;
-  resultSnapshot?: ReportSnapshot;
-}) {
-  const greeting = firstName ? `Hi ${firstName},` : "Hi,";
-  const calculatorUrl = `https://www.buzzpay.app${pagePath}`;
-  const related = [
-    ["/w2-vs-c2c", "W2 vs C2C"],
-    ["/contractor-rate-calculator", "Contractor Rate Calculator"],
-    ["/s-corp-savings-calculator", "S-Corp Savings Calculator"],
-    ["/llc-vs-s-corp", "LLC vs S-Corp"],
-    ["/1099-tax-calculator", "1099 Tax Calculator"],
-  ];
-  const snapshotSummary = resultSnapshot?.summary && typeof resultSnapshot.summary === "string" ? resultSnapshot.summary : "";
-  const snapshotAssumptions = Array.isArray(resultSnapshot?.assumptions)
-    ? resultSnapshot.assumptions.filter((item): item is string => typeof item === "string" && item.trim().length > 0)
-    : [];
-  const inputsSection = renderSnapshotEntries("Current inputs:", resultSnapshot?.inputs);
-  const resultsSection = renderSnapshotEntries("Key results:", resultSnapshot?.results);
-  const assumptionsVersion =
-    typeof resultSnapshot?.assumptionsVersion === "string" ? resultSnapshot.assumptionsVersion : "";
-  const timestamp = typeof resultSnapshot?.timestamp === "string" ? resultSnapshot.timestamp : "";
-  const summaryText = snapshotSummary
-    ? `Summary: ${snapshotSummary}`
-    : "This is an educational estimate for planning and comparison only.";
-  const snapshotText = [
-    assumptionsVersion ? `Snapshot version: ${assumptionsVersion}` : "",
-    timestamp ? `Snapshot time: ${timestamp}` : "",
-    snapshotSummary ? `Summary: ${snapshotSummary}` : "",
-    snapshotAssumptions.length ? `Assumptions:\n- ${snapshotAssumptions.join("\n- ")}` : "",
-    inputsSection,
-    resultsSection,
-  ].filter(Boolean).join("\n\n");
-  const snapshotHtml = [
-    assumptionsVersion ? `<p><strong>Snapshot version:</strong> ${escapeHtml(assumptionsVersion)}</p>` : "",
-    timestamp ? `<p><strong>Snapshot time:</strong> ${escapeHtml(timestamp)}</p>` : "",
-    snapshotSummary ? `<p><strong>Summary:</strong> ${escapeHtml(snapshotSummary)}</p>` : "",
-    snapshotAssumptions.length
-      ? `<p><strong>Assumptions</strong></p><ul>${snapshotAssumptions
-          .slice(0, 8)
-          .map((item) => `<li>${escapeHtml(item)}</li>`)
-          .join("")}</ul>`
-      : "",
-    renderSnapshotHtmlList("Current inputs", resultSnapshot?.inputs),
-    renderSnapshotHtmlList("Key results", resultSnapshot?.results),
-  ].join("");
-
-  const text = [
-    `${greeting}`,
-    "",
-    `Your BuzzPay contractor finance report request for ${calculatorName} is on file.`,
-    `Calculator: ${calculatorName}`,
-    `Link: ${calculatorUrl}`,
-    "",
-    summaryText,
-    "It is not tax, legal, or financial advice.",
-    snapshotText,
-    "",
-    "Related tools:",
-    ...related.map(([href, label]) => `- ${label}: https://www.buzzpay.app${href}`),
-    "",
-    "Thanks for using BuzzPay.",
-  ].join("\n");
-
-  const html = `
-    <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #1c1813">
-      <p>${escapeHtml(greeting)}</p>
-      <p>Your BuzzPay contractor finance report request for <strong>${escapeHtml(calculatorName)}</strong> is on file.</p>
-      <p><strong>Calculator:</strong> ${escapeHtml(calculatorName)}<br />
-      <strong>Link:</strong> <a href="${calculatorUrl}">${calculatorUrl}</a></p>
-      <p>${escapeHtml(summaryText)}<br />
-      It is not tax, legal, or financial advice.</p>
-      ${snapshotHtml}
-      <p><strong>Related tools</strong></p>
-      <ul>
-        ${related.map(([href, label]) => `<li><a href="https://www.buzzpay.app${href}">${label}</a></li>`).join("")}
-      </ul>
-      <p>Thanks for using BuzzPay.</p>
-    </div>
-  `;
-
-  return { text, html };
-}
-
 export async function POST(request: Request) {
   let payload: ReportRequestPayload;
 
@@ -281,6 +149,17 @@ export async function POST(request: Request) {
   const resultSnapshot = sanitizeSnapshot(payload.resultSnapshot);
   const honeypot = sanitizeString(payload.honeypot, 120);
   const clientIp = getClientIp(request);
+
+  if (process.env.NODE_ENV === "development") {
+    console.info("[report-request] received", {
+      calculatorSlug,
+      calculatorName,
+      hasSnapshot: Boolean(resultSnapshot),
+      snapshotKeys: resultSnapshot ? Object.keys(resultSnapshot) : [],
+      snapshotInputKeys: resultSnapshot?.keyInputs ? Object.keys(resultSnapshot.keyInputs) : [],
+      snapshotResultKeys: resultSnapshot?.keyResults ? Object.keys(resultSnapshot.keyResults) : [],
+    });
+  }
 
   if (!emailPattern.test(email)) {
     return NextResponse.json({ ok: false, error: "Enter a valid email address." }, { status: 400 });
@@ -384,7 +263,6 @@ export async function POST(request: Request) {
       const { text, html } = renderReportEmail({
         firstName: reportRequest.firstName,
         calculatorName: reportRequest.calculatorName,
-        calculatorSlug: reportRequest.calculatorSlug,
         pagePath: reportRequest.pagePath,
         resultSnapshot: reportRequest.resultSnapshot,
       });

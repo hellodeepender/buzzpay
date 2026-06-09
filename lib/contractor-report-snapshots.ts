@@ -8,12 +8,12 @@ export type ContractorReportSnapshot = {
   calculatorSlug: string;
   calculatorName: string;
   pagePath?: string;
-  timestamp: string;
+  generatedAt: string;
   assumptionsVersion?: string;
   summary?: string;
   assumptions?: string[];
-  inputs?: ReportSection;
-  results?: ReportSection;
+  keyInputs?: ReportSection;
+  keyResults?: ReportSection;
 };
 
 const SNAPSHOT_VERSION = "2026-06-08";
@@ -31,12 +31,12 @@ function baseSnapshot(
     calculatorSlug,
     calculatorName,
     pagePath,
-    timestamp: new Date().toISOString(),
+    generatedAt: new Date().toISOString(),
     assumptionsVersion: SNAPSHOT_VERSION,
     summary,
     assumptions,
-    inputs,
-    results,
+    keyInputs: inputs,
+    keyResults: results,
   };
 }
 

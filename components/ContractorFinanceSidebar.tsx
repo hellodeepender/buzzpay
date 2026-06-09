@@ -2,11 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ArrowDownRight } from "lucide-react";
 import { track } from "@vercel/analytics";
-import EmailReportCapture from "@/components/EmailReportCapture";
 import { contractorFinanceLinks } from "@/lib/contractor-finance";
-import type { ContractorReportSnapshot } from "@/lib/contractor-report-snapshots";
 
 const nextSteps = ["Business banking", "Bookkeeping", "Payroll", "Talk to a CPA"];
 
@@ -20,14 +18,11 @@ function trackNextStepClick(label: string, currentPath: string) {
 
 function SidebarContent({
   currentPath,
-  instanceId,
-  resultSnapshot,
 }: {
   currentPath: string;
-  instanceId: string;
-  resultSnapshot?: ContractorReportSnapshot;
 }) {
   const calculator = contractorFinanceLinks.find((item) => item.href === currentPath);
+  const reportTarget = `#report-form-${currentPath.replace(/^\//, "")}`;
 
   return (
     <div className="space-y-4">
@@ -56,13 +51,18 @@ function SidebarContent({
       </section>
 
       {calculator && (
-        <EmailReportCapture
-          calculatorSlug={currentPath.replace(/^\//, "")}
-          calculatorName={calculator.sidebarTitle}
-          instanceId={instanceId}
-          pagePath={currentPath}
-          resultSnapshot={resultSnapshot}
-        />
+        <section className="border-2 border-dashed border-ink rounded-[8px] bg-paper2 p-4">
+          <h2 className="text-[12px] uppercase tracking-wide font-bold text-muted mb-2">Free Report</h2>
+          <p className="text-[13.5px] text-ink2">Email me my contractor pay breakdown</p>
+          <a
+            href={reportTarget}
+            onClick={() => track("contractor_report_cta_click", { currentPath })}
+            className="mt-3 inline-flex items-center gap-2 rounded-[8px] border-2 border-ink bg-honey px-3 py-2 text-[13.5px] font-bold text-ink no-underline shadow-hardsm hover:translate-y-[-1px] transition"
+          >
+            Open report form
+            <ArrowDownRight size={16} />
+          </a>
+        </section>
       )}
 
       <section>
@@ -87,11 +87,9 @@ function SidebarContent({
 export default function ContractorFinanceSidebar({
   currentPath,
   variant = "both",
-  resultSnapshot,
 }: {
   currentPath: string;
   variant?: "desktop" | "mobile" | "both";
-  resultSnapshot?: ContractorReportSnapshot;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -100,7 +98,7 @@ export default function ContractorFinanceSidebar({
       {(variant === "desktop" || variant === "both") && (
         <aside className="hidden lg:block sticky top-5 self-start">
           <div className="bg-card border-2 border-ink rounded-xl2 shadow-hard p-4">
-            <SidebarContent currentPath={currentPath} instanceId="desktop" resultSnapshot={resultSnapshot} />
+            <SidebarContent currentPath={currentPath} />
           </div>
         </aside>
       )}
@@ -118,7 +116,7 @@ export default function ContractorFinanceSidebar({
           </button>
           {open && (
             <div className="border-t border-ink/20 p-4">
-              <SidebarContent currentPath={currentPath} instanceId="mobile" resultSnapshot={resultSnapshot} />
+              <SidebarContent currentPath={currentPath} />
             </div>
           )}
         </section>

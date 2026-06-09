@@ -2,6 +2,7 @@
 
 import { Children, useEffect, useMemo, useState } from "react";
 import { AlertTriangle, Calculator } from "lucide-react";
+import EmailReportCapture from "@/components/EmailReportCapture";
 import { money } from "@/lib/format";
 import {
   TAX_YEAR,
@@ -218,15 +219,26 @@ export function W2VsC2CCalculator({ onSnapshotChange }: { onSnapshotChange?: Sna
       <NumberField label="Annual business expenses" value={expenses} setValue={setExpenses} min={0} max={500000} prefix="$" />
       <NumberField label="Estimated C2C tax rate" value={c2cTaxRate} setValue={setC2cTaxRate} min={0} max={60} suffix="%" step={0.5} />
       <NumberField label="Contract risk reserve" value={riskRate} setValue={setRiskRate} min={0} max={40} suffix="%" step={0.5} />
-      <ResultCard label={c2cAhead ? "Estimated C2C advantage" : "Estimated W2 advantage"} value={money(Math.abs(result.difference))} tone={c2cAhead ? "green" : "red"}>
-        <Row label="W2 cash compensation" value={money(result.w2Cash)} />
-        <Row label="W2 estimated tax" value={`-${money(result.w2EstimatedTax)}`} />
-        <Row label="W2 retained value + benefits" value={money(result.w2EstimatedValue)} strong />
-        <Row label="C2C gross billings" value={money(result.c2cGross)} />
-        <Row label="Expenses + risk reserve" value={`-${money(n(expenses, 0, 500000) + result.riskReserve)}`} />
-        <Row label="C2C estimated tax" value={`-${money(result.c2cEstimatedTax)}`} />
-        <Row label="C2C retained value" value={money(result.c2cEstimatedValue)} strong />
-      </ResultCard>
+      <div className="space-y-3">
+        <ResultCard label={c2cAhead ? "Estimated C2C advantage" : "Estimated W2 advantage"} value={money(Math.abs(result.difference))} tone={c2cAhead ? "green" : "red"}>
+          <Row label="W2 cash compensation" value={money(result.w2Cash)} />
+          <Row label="W2 estimated tax" value={`-${money(result.w2EstimatedTax)}`} />
+          <Row label="W2 retained value + benefits" value={money(result.w2EstimatedValue)} strong />
+          <Row label="C2C gross billings" value={money(result.c2cGross)} />
+          <Row label="Expenses + risk reserve" value={`-${money(n(expenses, 0, 500000) + result.riskReserve)}`} />
+          <Row label="C2C estimated tax" value={`-${money(result.c2cEstimatedTax)}`} />
+          <Row label="C2C retained value" value={money(result.c2cEstimatedValue)} strong />
+        </ResultCard>
+        <section id="report-form-w2-vs-c2c" className="scroll-mt-24">
+          <EmailReportCapture
+            calculatorSlug="w2-vs-c2c"
+            calculatorName="W2 vs C2C Calculator"
+            instanceId="inline"
+            pagePath="/w2-vs-c2c"
+            resultSnapshot={snapshot}
+          />
+        </section>
+      </div>
     </ToolShell>
   );
 }
@@ -289,15 +301,26 @@ export function ContractorRateCalculator({ onSnapshotChange }: { onSnapshotChang
       <NumberField label="Estimated tax reserve" value={taxRate} setValue={setTaxRate} min={0} max={60} suffix="%" step={0.5} />
       <NumberField label="Billable hours / week" value={hours} setValue={setHours} min={1} max={80} />
       <NumberField label="Working weeks / year" value={weeks} setValue={setWeeks} min={1} max={52} />
-      <ResultCard label="Minimum rounded planning rate" value={`${money(result.roundedHourlyRate)}/hr`}>
-        <Row label="Annual billable hours" value={result.billableHours.toLocaleString()} />
-        <Row label="Taxable owner cash need" value={money(result.taxableCashNeed)} />
-        <Row label="Benefits + business costs" value={money(result.operatingCosts)} />
-        <Row label="Estimated tax reserve" value={money(result.estimatedTaxReserve)} />
-        <Row label="Required annual revenue" value={money(result.requiredRevenue)} strong />
-        <Row label="Suggested 8-hour day rate" value={money(result.dayRate)} />
-        <Row label="Monthly revenue target" value={money(result.monthlyRevenueTarget)} />
-      </ResultCard>
+      <div className="space-y-3">
+        <ResultCard label="Minimum rounded planning rate" value={`${money(result.roundedHourlyRate)}/hr`}>
+          <Row label="Annual billable hours" value={result.billableHours.toLocaleString()} />
+          <Row label="Taxable owner cash need" value={money(result.taxableCashNeed)} />
+          <Row label="Benefits + business costs" value={money(result.operatingCosts)} />
+          <Row label="Estimated tax reserve" value={money(result.estimatedTaxReserve)} />
+          <Row label="Required annual revenue" value={money(result.requiredRevenue)} strong />
+          <Row label="Suggested 8-hour day rate" value={money(result.dayRate)} />
+          <Row label="Monthly revenue target" value={money(result.monthlyRevenueTarget)} />
+        </ResultCard>
+        <section id="report-form-contractor-rate-calculator" className="scroll-mt-24">
+          <EmailReportCapture
+            calculatorSlug="contractor-rate-calculator"
+            calculatorName="Contractor Rate Calculator"
+            instanceId="inline"
+            pagePath="/contractor-rate-calculator"
+            resultSnapshot={snapshot}
+          />
+        </section>
+      </div>
     </ToolShell>
   );
 }
@@ -358,13 +381,24 @@ export function SCorpSavingsCalculator({ onSnapshotChange }: { onSnapshotChange?
       <NumberField label="State entity costs" value={stateCosts} setValue={setStateCosts} min={0} max={100000} prefix="$" />
       <FilingStatusField value={filingStatus} setValue={setFilingStatus} />
       {n(salary, 0, 1000000) > n(profit, 0, 2000000) && <p className="sm:col-span-2 text-clay text-xs flex gap-2"><AlertTriangle size={16} /> Salary is capped at entered business profit for this estimate.</p>}
-      <ResultCard label={positive ? "Estimated net planning benefit" : "Estimated added annual cost"} value={money(Math.abs(result.netEstimatedBenefit))} tone={positive ? "green" : "red"}>
-        <Row label="Baseline estimated SE tax" value={money(result.baselineSeTax)} />
-        <Row label="Estimated tax on salary" value={`-${money(result.salaryPayrollTax)}`} />
-        <Row label="Gross employment-tax difference" value={money(result.grossEmploymentTaxDifference)} />
-        <Row label="Payroll, professional + state costs" value={`-${money(result.addedCosts)}`} />
-        <Row label="Potential non-wage profit" value={money(result.nonWageProfit)} strong />
-      </ResultCard>
+      <div className="space-y-3">
+        <ResultCard label={positive ? "Estimated net planning benefit" : "Estimated added annual cost"} value={money(Math.abs(result.netEstimatedBenefit))} tone={positive ? "green" : "red"}>
+          <Row label="Baseline estimated SE tax" value={money(result.baselineSeTax)} />
+          <Row label="Estimated tax on salary" value={`-${money(result.salaryPayrollTax)}`} />
+          <Row label="Gross employment-tax difference" value={money(result.grossEmploymentTaxDifference)} />
+          <Row label="Payroll, professional + state costs" value={`-${money(result.addedCosts)}`} />
+          <Row label="Potential non-wage profit" value={money(result.nonWageProfit)} strong />
+        </ResultCard>
+        <section id="report-form-s-corp-savings-calculator" className="scroll-mt-24">
+          <EmailReportCapture
+            calculatorSlug="s-corp-savings-calculator"
+            calculatorName="S-Corp Savings Calculator"
+            instanceId="inline"
+            pagePath="/s-corp-savings-calculator"
+            resultSnapshot={snapshot}
+          />
+        </section>
+      </div>
     </ToolShell>
   );
 }
@@ -425,13 +459,24 @@ export function LLCVsSCorpCalculator({ onSnapshotChange }: { onSnapshotChange?: 
       <NumberField label="Additional state entity costs" value={stateCosts} setValue={setStateCosts} min={0} max={100000} prefix="$" />
       <NumberField label="Other W2 wages" value={w2Wages} setValue={setW2Wages} min={0} max={1000000} prefix="$" />
       <FilingStatusField value={filingStatus} setValue={setFilingStatus} />
-      <ResultCard label={sCorpLower ? "S-corp scenario lower by" : "Default LLC scenario lower by"} value={money(Math.abs(result.estimatedDifference))} tone={sCorpLower ? "green" : "red"}>
-        <Row label="Default LLC estimated SE tax" value={money(result.llcSeTax)} />
-        <Row label="Default LLC tax + admin" value={money(result.defaultLLCEstimatedCost)} strong />
-        <Row label="S-corp salary payroll tax" value={money(result.sCorpSalaryPayrollTax)} />
-        <Row label="S-corp payroll + entered costs" value={money(result.sCorpEstimatedCost)} strong />
-        <Row label="Potential non-wage profit" value={money(result.nonWageProfit)} />
-      </ResultCard>
+      <div className="space-y-3">
+        <ResultCard label={sCorpLower ? "S-corp scenario lower by" : "Default LLC scenario lower by"} value={money(Math.abs(result.estimatedDifference))} tone={sCorpLower ? "green" : "red"}>
+          <Row label="Default LLC estimated SE tax" value={money(result.llcSeTax)} />
+          <Row label="Default LLC tax + admin" value={money(result.defaultLLCEstimatedCost)} strong />
+          <Row label="S-corp salary payroll tax" value={money(result.sCorpSalaryPayrollTax)} />
+          <Row label="S-corp payroll + entered costs" value={money(result.sCorpEstimatedCost)} strong />
+          <Row label="Potential non-wage profit" value={money(result.nonWageProfit)} />
+        </ResultCard>
+        <section id="report-form-llc-vs-s-corp" className="scroll-mt-24">
+          <EmailReportCapture
+            calculatorSlug="llc-vs-s-corp"
+            calculatorName="LLC vs S-Corp"
+            instanceId="inline"
+            pagePath="/llc-vs-s-corp"
+            resultSnapshot={snapshot}
+          />
+        </section>
+      </div>
     </ToolShell>
   );
 }
@@ -496,16 +541,27 @@ export function Tax1099Calculator({ onSnapshotChange }: { onSnapshotChange?: Sna
       <NumberField label="Estimated federal income-tax rate" value={federalRate} setValue={setFederalRate} min={0} max={50} suffix="%" step={0.5} />
       <NumberField label="Estimated state/local rate" value={stateRate} setValue={setStateRate} min={0} max={20} suffix="%" step={0.5} />
       <NumberField label="Payments / withholding already made" value={payments} setValue={setPayments} min={0} max={2000000} prefix="$" />
-      <ResultCard label={due ? "Estimated remaining tax reserve" : "Estimated payments above model"} value={money(Math.abs(result.remainingBalance))} tone={due ? "honey" : "green"}>
-        <Row label="Net business profit" value={money(result.netProfit)} strong />
-        <Row label="Self-employment tax" value={money(result.selfEmploymentTax)} />
-        <Row label="Estimated federal income tax" value={money(result.estimatedFederalIncomeTax)} />
-        <Row label="Estimated state/local tax" value={money(result.estimatedStateTax)} />
-        <Row label="Total estimated tax" value={money(result.totalEstimatedTax)} strong />
-        <Row label="Payments already made" value={`-${money(result.paymentsMade)}`} />
-        <Row label="Quarterly set-aside before payments" value={money(result.suggestedQuarterlySetAside)} />
-        <Row label="Effective rate on net profit" value={`${(result.effectiveTaxRate * 100).toFixed(1)}%`} />
-      </ResultCard>
+      <div className="space-y-3">
+        <ResultCard label={due ? "Estimated remaining tax reserve" : "Estimated payments above model"} value={money(Math.abs(result.remainingBalance))} tone={due ? "honey" : "green"}>
+          <Row label="Net business profit" value={money(result.netProfit)} strong />
+          <Row label="Self-employment tax" value={money(result.selfEmploymentTax)} />
+          <Row label="Estimated federal income tax" value={money(result.estimatedFederalIncomeTax)} />
+          <Row label="Estimated state/local tax" value={money(result.estimatedStateTax)} />
+          <Row label="Total estimated tax" value={money(result.totalEstimatedTax)} strong />
+          <Row label="Payments already made" value={`-${money(result.paymentsMade)}`} />
+          <Row label="Quarterly set-aside before payments" value={money(result.suggestedQuarterlySetAside)} />
+          <Row label="Effective rate on net profit" value={`${(result.effectiveTaxRate * 100).toFixed(1)}%`} />
+        </ResultCard>
+        <section id="report-form-1099-tax-calculator" className="scroll-mt-24">
+          <EmailReportCapture
+            calculatorSlug="1099-tax-calculator"
+            calculatorName="1099 Tax Calculator"
+            instanceId="inline"
+            pagePath="/1099-tax-calculator"
+            resultSnapshot={snapshot}
+          />
+        </section>
+      </div>
     </ToolShell>
   );
 }
