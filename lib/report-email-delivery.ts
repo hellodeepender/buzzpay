@@ -60,7 +60,7 @@ export async function deliverReportEmail({
   const response = await resendClient.emails.send({
     from,
     to: [to],
-    subject: "Your BuzzPay contractor finance report",
+    subject: "Your BuzzPay contractor report",
     text,
     html,
     ...(replyTo ? { replyTo } : {}),

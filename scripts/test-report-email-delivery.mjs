@@ -94,6 +94,13 @@ const success = await deliverReportEmail({
 
 assert.equal(sendCalls, 1);
 assert.equal(sentPayloads[0].replyTo, "help@buzzpay.app");
+assert.equal(sentPayloads[0].subject, "Your BuzzPay contractor report");
+assert.match(sentPayloads[0].text, /BuzzPay/);
+assert.match(sentPayloads[0].text, /Educational contractor finance tools/);
+assert.match(sentPayloads[0].text, /https:\/\/www\.buzzpay\.app\/privacy/);
+assert.match(sentPayloads[0].html, /BuzzPay/);
+assert.match(sentPayloads[0].html, /Educational contractor finance tools/);
+assert.match(sentPayloads[0].html, /affiliate-disclosure/);
 assert.deepEqual(success, {
   status: "sent",
   emailError: null,

@@ -176,6 +176,12 @@ export function renderReportEmail({
         assumptionsText,
       ].filter(Boolean).join("\n")
     : "This is an educational estimate for planning and comparison only.";
+  const footerText = [
+    "BuzzPay",
+    "Educational contractor finance tools",
+    "Privacy: https://www.buzzpay.app/privacy",
+    "Affiliate disclosure: https://www.buzzpay.app/affiliate-disclosure",
+  ].join("\n");
 
   const text = [
     greeting,
@@ -191,7 +197,7 @@ export function renderReportEmail({
     "Related tools:",
     ...RELATED_TOOLS.map(([href, label]) => `- ${label}: https://www.buzzpay.app${href}`),
     "",
-    "Thanks for using BuzzPay.",
+    footerText,
   ].join("\n");
 
   const html = `
@@ -248,7 +254,9 @@ export function renderReportEmail({
           </div>
 
           <div style="margin-top:22px;font-size:13px;line-height:1.7;color:#6d5b4a">
-            Thanks for using BuzzPay.
+            <div style="font-weight:700;color:#1c1813">BuzzPay</div>
+            <div>Educational contractor finance tools</div>
+            <div style="margin-top:6px"><a href="https://www.buzzpay.app/privacy" style="color:#8a6b28;text-decoration:none;font-weight:700">Privacy</a> · <a href="https://www.buzzpay.app/affiliate-disclosure" style="color:#8a6b28;text-decoration:none;font-weight:700">Affiliate disclosure</a></div>
           </div>
         </div>
       </div>
