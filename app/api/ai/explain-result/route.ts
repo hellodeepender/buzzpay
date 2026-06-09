@@ -6,43 +6,14 @@ import {
   normalizeExplainResultResponse,
   validateExplainResultPayload,
 } from "@/lib/ai-explain-result";
-
-type RateBucket = { count: number; resetAt: number };
-const rateLimitStore = new Map<string, RateBucket>();
-const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
-const RATE_LIMIT_MAX = 4;
-
-function getClientIp(request: Request) {
-  return (
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    request.headers.get("x-real-ip")?.trim() ||
-    request.headers.get("cf-connecting-ip")?.trim() ||
-    "unknown"
-  );
-}
-
-function isRateLimited(key: string) {
-  const now = Date.now();
-  const bucket = rateLimitStore.get(key);
-  if (!bucket || bucket.resetAt <= now) {
-    rateLimitStore.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-    return false;
-  }
-  bucket.count += 1;
-  rateLimitStore.set(key, bucket);
-  return bucket.count > RATE_LIMIT_MAX;
-}
+import { evaluateAiRequestRateLimits } from "@/lib/rate-limit";
+import { getTrustedClientIp } from "@/lib/request-ip";
 
 function buildErrorResponse(message: string, status = 400) {
   return NextResponse.json({ ok: false, error: message }, { status });
 }
 
 export async function POST(request: Request) {
-  const clientIp = getClientIp(request);
-  if (isRateLimited(`${clientIp}:ai-explain-result`)) {
-    return buildErrorResponse("Too many requests. Try again later.", 429);
-  }
-
   const rawBody = await request.text();
   if (rawBody.length > explainResultLimits.maxRequestBodyChars) {
     return buildErrorResponse("Request body is too large.", 413);
@@ -53,6 +24,21 @@ export async function POST(request: Request) {
     return buildErrorResponse(validated.error, 400);
   }
 
+  const clientIp = getTrustedClientIp(request);
+  const dailyLimit = Number(process.env.AI_DAILY_LIMIT ?? "500");
+  const aiBudget = await evaluateAiRequestRateLimits({
+    clientIp,
+    dailyKey: new Date().toISOString().slice(0, 10),
+    dailyLimit: Number.isFinite(dailyLimit) && dailyLimit > 0 ? Math.floor(dailyLimit) : 500,
+    dailyWindowSeconds: 24 * 60 * 60,
+    perIpMax: 4,
+    perIpWindowSeconds: 10 * 60,
+  });
+
+  if (!aiBudget.ok) {
+    return buildErrorResponse(aiBudget.errorMessage, aiBudget.statusCode);
+  }
+
   const apiKey = process.env.OPENAI_API_KEY?.trim();
   if (!apiKey) {
     return buildErrorResponse("AI explanations are not configured.", 503);
@@ -60,6 +46,9 @@ export async function POST(request: Request) {
 
   const model = process.env.OPENAI_MODEL?.trim() || "gpt-4.1-mini";
   const messages = buildExplainResultMessages(validated.snapshot);
+  const controller = new AbortController();
+  const timeoutMs = 15_000;
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -68,10 +57,12 @@ export async function POST(request: Request) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
+      signal: controller.signal,
       body: JSON.stringify({
         model,
         temperature: 0.2,
         response_format: { type: "json_object" },
+        max_completion_tokens: 500,
         messages: [
           { role: "system", content: messages.system },
           { role: "user", content: messages.user },
@@ -128,5 +119,7 @@ export async function POST(request: Request) {
       });
     }
     return buildErrorResponse("We could not generate an explanation right now.", 502);
+  } finally {
+    clearTimeout(timeoutId);
   }
 }

@@ -9,6 +9,8 @@ import {
   type ReportSnapshot,
 } from "@/lib/report-request-email";
 import { deliverReportEmail } from "@/lib/report-email-delivery";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { getTrustedClientIp } from "@/lib/request-ip";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const calculators = {
@@ -30,12 +32,8 @@ type ReportRequestPayload = {
 };
 
 type DeliveryStatus = "sent" | "skipped" | "failed";
-
-type RateBucket = { count: number; resetAt: number };
-const rateLimitStore = new Map<string, RateBucket>();
-const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000;
 const RATE_LIMIT_MAX = 5;
-const RATE_LIMIT_SUFFIX = "_report_request";
+const RATE_LIMIT_WINDOW_SECONDS = 10 * 60;
 
 function sanitizeString(value: unknown, maxLength: number) {
   if (typeof value !== "string") return "";
@@ -78,29 +76,6 @@ function sanitizeSnapshot(value: unknown) {
     return undefined;
   }
   return sanitized as ReportSnapshot;
-}
-
-function getClientIp(request: Request) {
-  const requestHeaders = request.headers;
-  return (
-    requestHeaders.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    requestHeaders.get("x-real-ip")?.trim() ||
-    requestHeaders.get("cf-connecting-ip")?.trim() ||
-    "unknown"
-  );
-}
-
-function isRateLimited(key: string) {
-  const now = Date.now();
-  const bucket = rateLimitStore.get(key);
-  if (!bucket || bucket.resetAt <= now) {
-    rateLimitStore.set(key, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
-    return false;
-  }
-
-  bucket.count += 1;
-  rateLimitStore.set(key, bucket);
-  return bucket.count > RATE_LIMIT_MAX;
 }
 
 async function updateReportRequestStatus({
@@ -159,7 +134,7 @@ export async function POST(request: Request) {
   const pagePath = sanitizeString(payload.pagePath, 160);
   const resultSnapshot = sanitizeSnapshot(payload.resultSnapshot);
   const honeypot = sanitizeString(payload.honeypot, 120);
-  const clientIp = getClientIp(request);
+  const clientIp = getTrustedClientIp(request);
 
   if (process.env.NODE_ENV === "development") {
     console.info("[report-request] received", {
@@ -189,9 +164,6 @@ export async function POST(request: Request) {
   if (pagePath && pagePath !== expectedPagePath) {
     return NextResponse.json({ ok: false, error: "Page details are invalid." }, { status: 400 });
   }
-
-  const rateLimitKey = `${email}${RATE_LIMIT_SUFFIX}`;
-  const shouldRateLimit = isRateLimited(rateLimitKey) || isRateLimited(`${clientIp}${RATE_LIMIT_SUFFIX}`);
   const honeypotFilled = Boolean(honeypot);
 
   const reportRequest = {
@@ -215,15 +187,38 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true, emailDeliveryStatus: "skipped" as DeliveryStatus });
   }
 
-  if (shouldRateLimit) {
+  const [emailLimit, ipLimit] = await Promise.all([
+    checkRateLimit({
+      key: `report:email:${email}`,
+      max: RATE_LIMIT_MAX,
+      windowSeconds: RATE_LIMIT_WINDOW_SECONDS,
+    }),
+    checkRateLimit({
+      key: `report:ip:${clientIp}`,
+      max: RATE_LIMIT_MAX,
+      windowSeconds: RATE_LIMIT_WINDOW_SECONDS,
+    }),
+  ]);
+
+  if (emailLimit.limited || ipLimit.limited) {
     if (process.env.NODE_ENV === "development") {
       console.info("[report-request] rate limited", {
         email,
         calculatorSlug,
         clientIp,
+        emailLimitUnavailable: Boolean(emailLimit.unavailable),
+        ipLimitUnavailable: Boolean(ipLimit.unavailable),
       });
     }
     return NextResponse.json({ ok: true, emailDeliveryStatus: "skipped" as DeliveryStatus });
+  }
+
+  if (process.env.NODE_ENV === "development" && (emailLimit.unavailable || ipLimit.unavailable)) {
+    console.info("[report-request] durable rate limiter unavailable; continuing", {
+      email,
+      calculatorSlug,
+      clientIp,
+    });
   }
 
   let insertedId: string | undefined;
