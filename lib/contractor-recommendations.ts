@@ -80,7 +80,7 @@ const sources: RecommendationSource[] = [
     category: "llc-s-corp-formation",
     description: "Compare formation services and filing help if you need a new legal entity or a federal tax election.",
     bestFor: "People who are still deciding whether to form, elect, or restructure.",
-    ctaLabel: "Compare formation services",
+    ctaLabel: "Formation next step",
     envVarName: "AFFILIATE_FORMATION_URL",
     fallbackHref: "/go/formation",
   },

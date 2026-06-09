@@ -3,7 +3,9 @@ import { track } from "@vercel/analytics/server";
 import { getAffiliateRedirectConfig } from "@/lib/affiliate-redirects";
 
 function safeRedirect(target: string, request: Request) {
-  return NextResponse.redirect(new URL(target, request.url), 307);
+  const response = NextResponse.redirect(new URL(target, request.url), 307);
+  response.headers.set("X-Robots-Tag", "noindex, nofollow");
+  return response;
 }
 
 export async function GET(request: Request, { params }: { params: { slug: string } }) {
