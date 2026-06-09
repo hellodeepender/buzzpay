@@ -122,3 +122,37 @@ export function breadcrumbJsonLd(
     })),
   };
 }
+
+export function articleJsonLd({
+  headline,
+  description,
+  path,
+  datePublished,
+  dateModified,
+  authorName = SITE_NAME,
+}: {
+  headline: string;
+  description: string;
+  path: string;
+  datePublished: string;
+  dateModified?: string;
+  authorName?: string;
+}): JsonLdObject {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline,
+    description,
+    mainEntityOfPage: absoluteUrl(path),
+    datePublished,
+    dateModified: dateModified ?? datePublished,
+    author: {
+      "@type": "Organization",
+      name: authorName,
+      url: SITE_URL,
+    },
+    publisher: { "@id": `${SITE_URL}/#organization` },
+    isAccessibleForFree: true,
+    inLanguage: "en-US",
+  };
+}

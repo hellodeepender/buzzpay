@@ -16,6 +16,7 @@ import {
   contractorFinanceLinks,
   type ContractorPageContent,
 } from "@/lib/contractor-finance";
+import { guideArticleList } from "@/lib/contractor-finance-guides";
 import { buildContractorRecommendationCategories } from "@/lib/contractor-recommendations";
 
 const REVIEW_DATE = "2026-06-08";
@@ -87,6 +88,28 @@ export default function ContractorFinancePage({ content }: { content: Contractor
             </div>
             <AffiliateDisclosure />
             <ContractorBusinessStack categories={recommendationCategories} currentPath={content.path} />
+            <section className="mt-12 max-w-[1120px]" aria-labelledby="contractor-articles-heading">
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <div>
+                  <p className="text-xs uppercase font-bold text-honeyDeep mb-1">Supporting articles</p>
+                  <h2 id="contractor-articles-heading" className="font-display text-2xl font-semibold text-ink">
+                    Read the guides that explain the decisions behind the calculators
+                  </h2>
+                  <p className="mt-1 max-w-[760px] text-[14.5px] text-ink2">
+                    These articles connect the calculators to the real planning questions: offer comparisons, rate setting, expense discipline, quarterly taxes, and entity choices.
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                {guideArticleList.map((item) => (
+                  <Link key={item.href} href={item.href} className="block border-2 border-ink bg-card rounded-xl2 p-4 text-ink no-underline shadow-hard hover:bg-paper2 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper">
+                    <h3 className="font-display text-lg font-semibold">{item.title}</h3>
+                    <p className="mt-2 text-[13.5px] leading-relaxed text-ink2">{item.description}</p>
+                    <span className="mt-4 inline-block text-[13px] font-semibold text-honeyDeep">Read article →</span>
+                  </Link>
+                ))}
+              </div>
+            </section>
           </>
         ) : (
           <>
