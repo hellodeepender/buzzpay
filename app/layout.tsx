@@ -28,6 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <head>
+        <meta {...({ name: "impact-site-verification", value: "15bb071e-ba6a-40a2-9311-35e022df7ecb" } as React.MetaHTMLAttributes<HTMLMetaElement>)} />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
         <link
