@@ -55,9 +55,9 @@ export default function AIResultExplanation({
   }
 
   return (
-    <section className="border-2 border-ink rounded-[8px] bg-card p-4 shadow-hardsm">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div>
+    <section className="w-full min-w-0 overflow-visible border-2 border-ink rounded-[8px] bg-card p-4 shadow-hardsm">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div className="min-w-0">
           <h2 className="font-display text-lg font-semibold text-ink">AI explanation</h2>
           <p className="text-[12.5px] text-ink2 mt-1">
             A short educational explanation based only on the calculator result snapshot.
@@ -80,10 +80,12 @@ export default function AIResultExplanation({
       )}
 
       {explanation && (
-        <div className="mt-4 space-y-3">
-          <div className="rounded-[8px] border border-ink/15 bg-paper2 p-3">
+        <div className="mt-4 space-y-4">
+          <div className="w-full rounded-[8px] border border-ink/15 bg-paper2 p-4">
             <p className="text-[12px] uppercase font-bold tracking-wide text-muted">Summary</p>
-            <p className="mt-1 text-[13.5px] text-ink2">{explanation.summary}</p>
+            <p className="mt-1 text-[14px] leading-7 text-ink2 whitespace-pre-wrap break-words">
+              {explanation.summary}
+            </p>
           </div>
 
           <DetailList title="Key takeaways" items={explanation.keyTakeaways} />
@@ -93,9 +95,9 @@ export default function AIResultExplanation({
             <DetailList title="Negotiation tips" items={explanation.negotiationTips} />
           )}
 
-          <div className="rounded-[8px] border border-ink/15 bg-paper2 p-3">
+          <div className="w-full rounded-[8px] border border-ink/15 bg-paper2 p-4">
             <p className="text-[12px] uppercase font-bold tracking-wide text-muted">Disclaimer</p>
-            <p className="mt-1 text-[13px] text-ink2">{explanation.disclaimer}</p>
+            <p className="mt-1 text-[13px] leading-6 text-ink2 whitespace-pre-wrap break-words">{explanation.disclaimer}</p>
           </div>
         </div>
       )}
@@ -105,13 +107,13 @@ export default function AIResultExplanation({
 
 function DetailList({ title, items }: { title: string; items: string[] }) {
   return (
-    <div className="rounded-[8px] border border-ink/15 bg-paper2 p-3">
+    <div className="w-full rounded-[8px] border border-ink/15 bg-paper2 p-4">
       <p className="text-[12px] uppercase font-bold tracking-wide text-muted">{title}</p>
-      <ul className="mt-2 space-y-2 text-[13px] text-ink2">
+      <ul className="mt-2 space-y-2 text-[13px] leading-6 text-ink2">
         {items.map((item) => (
-          <li key={item} className="flex gap-2">
+          <li key={item} className="flex gap-2 min-w-0 items-start">
             <span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-honeyDeep" />
-            <span>{item}</span>
+            <span className="min-w-0 break-words whitespace-pre-wrap">{item}</span>
           </li>
         ))}
       </ul>
