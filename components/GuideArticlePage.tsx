@@ -7,6 +7,7 @@ import {
   Methodology,
   Sources,
 } from "@/components/CalculatorTrust";
+import IntentBlocks from "@/components/IntentBlocks";
 import { articleJsonLd } from "@/lib/seo";
 import type { SourceItem } from "@/components/CalculatorTrust";
 
@@ -75,6 +76,8 @@ export default function GuideArticlePage({ article }: { article: GuideArticle })
       <FinancialDisclaimer>
         This article is educational and does not provide tax, legal, accounting, or financial advice. Use the linked calculator pages to test assumptions, then review the result with a qualified professional when the decision has material consequences.
       </FinancialDisclaimer>
+
+      <IntentBlocks kind="guide" path={article.path} title={article.title} />
 
       <article className="mt-10 max-w-[760px] text-[15.5px] text-ink2 leading-[1.75]">
         {article.sections.map((section) => (

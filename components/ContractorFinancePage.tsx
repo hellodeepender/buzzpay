@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Calculator } from "lucide-react";
 import ContractorFinanceInteractive from "@/components/ContractorFinanceInteractive";
+import IntentBlocks from "@/components/IntentBlocks";
 import {
   FinancialDisclaimer,
   LastReviewed,
@@ -54,6 +55,7 @@ export default function ContractorFinancePage({ content }: { content: Contractor
           </h1>
           <p className="text-ink2 text-lg">{content.intro}</p>
         </section>
+        <LastReviewed date={REVIEW_DATE} />
 
         {isHub ? (
           <>
@@ -84,9 +86,7 @@ export default function ContractorFinancePage({ content }: { content: Contractor
                 ))}
               </div>
             </section>
-            <div className="mt-4">
-              <LastReviewed date={REVIEW_DATE} />
-            </div>
+            <IntentBlocks kind="hub" path={content.path} title={content.title} />
             <AffiliateDisclosure />
             <ContractorBusinessStack categories={recommendationCategories} currentPath={content.path} />
             <section className="mt-12 max-w-[1120px]" aria-labelledby="rate-professions-heading">
@@ -141,6 +141,7 @@ export default function ContractorFinancePage({ content }: { content: Contractor
         ) : (
           <>
             <ContractorFinanceInteractive path={content.path} />
+            <IntentBlocks kind="calculator" path={content.path} title={content.title} />
             {content.path === "/contractor-rate-calculator" && (
               <section className="mt-10 max-w-[1120px]" aria-labelledby="rate-professions-heading">
                 <div className="flex items-start justify-between gap-4 mb-4">

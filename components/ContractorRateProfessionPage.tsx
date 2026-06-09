@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/JsonLd";
 import { FinancialDisclaimer, LastReviewed } from "@/components/CalculatorTrust";
+import IntentBlocks from "@/components/IntentBlocks";
 import RateCalculator from "@/components/RateCalculator";
 import { contractorRateProfessions, type ContractorRateProfession } from "@/lib/contractor-rate-professions";
 
@@ -57,6 +58,8 @@ export default function ContractorRateProfessionPage({
         </div>
         <RateCalculator />
       </section>
+
+      <IntentBlocks kind="profession" path={`/contractor-rate-calculator/${profession.slug}`} title={profession.label} />
 
       <section className="mt-10 max-w-[760px] text-[15.5px] text-ink2 leading-[1.75]">
         <h2 className="font-display text-[26px] font-semibold mb-3 text-ink">What changes a rate for {profession.label.toLowerCase()}</h2>
