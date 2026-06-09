@@ -11,6 +11,7 @@
     "test:report-delivery": "node scripts/test-report-email-delivery.mjs",
     "test:ai-explain-result": "node scripts/test-ai-explain-result.mjs",
     "test:rate-limits": "node scripts/test-rate-limits.mjs",
+    "seo:check": "node scripts/seo-check.mjs",
     "lint": "next lint"
   },
   "dependencies": {
