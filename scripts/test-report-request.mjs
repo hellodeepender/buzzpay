@@ -55,6 +55,10 @@ assert.match(withSnapshot.html, /Key results/);
 assert.match(withSnapshot.html, /Assumptions/);
 assert.match(withSnapshot.html, /Disclaimer/);
 assert.match(withSnapshot.html, /Open calculator/);
+assert.match(withSnapshot.text, /To stop future contractor finance emails, reply with unsubscribe\./);
+assert.match(withSnapshot.html, /To stop future contractor finance emails, reply with unsubscribe\./);
+assert.match(withSnapshot.text, /Privacy:/);
+assert.match(withSnapshot.html, /Affiliate disclosure/);
 
 const fallback = renderReportEmail({
   calculatorName: "W2 vs C2C Calculator",
@@ -64,5 +68,10 @@ const fallback = renderReportEmail({
 assert.match(fallback.text, /Your BuzzPay contractor finance report request is on file\./);
 assert.match(fallback.html, /Your BuzzPay contractor finance report request is on file\./);
 assert.doesNotMatch(fallback.text, /Key inputs/);
+
+const emailCaptureSource = readFileSync(new URL("../components/EmailReportCapture.tsx", import.meta.url), "utf8");
+assert.match(emailCaptureSource, /I agree to receive this report and occasional contractor finance emails from BuzzPay\./);
+assert.match(emailCaptureSource, /Privacy Policy/);
+assert.match(emailCaptureSource, /consentGiven/);
 
 console.log("report request tests passed");

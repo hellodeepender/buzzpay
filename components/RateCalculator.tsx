@@ -5,6 +5,7 @@ import RecoCard from "./RecoCard";
 import { Clock } from "lucide-react";
 
 export default function RateCalculator() {
+  const id = (suffix: string) => `rate-calculator-${suffix}`;
   const [take, setTake] = useState("70000");
   const [hrs, setHrs] = useState("25");
   const [weeks, setWeeks] = useState("48");
@@ -26,18 +27,18 @@ export default function RateCalculator() {
         <h2 className="font-display text-xl font-semibold mb-1">Your numbers</h2>
         <p className="text-muted text-[13.5px] mb-[18px]">Annual figures. Be honest about billable hours.</p>
 
-        <div className="mb-4"><label className="field-label">Take-home income you want (per year)</label>
-          <div className="relative"><PFX s="$" /><input type="number" value={take} onChange={(ev) => setTake(ev.target.value)} className="field-input pl-[30px]" /></div></div>
+        <div className="mb-4"><label className="field-label" htmlFor={id("take-home")}>Take-home income you want (per year)</label>
+          <div className="relative"><PFX s="$" /><input id={id("take-home")} type="number" value={take} onChange={(ev) => setTake(ev.target.value)} className="field-input pl-[30px]" /></div></div>
         <div className="grid grid-cols-2 gap-3">
-          <div className="mb-4"><label className="field-label">Billable hours / week</label>
-            <input type="number" value={hrs} onChange={(ev) => setHrs(ev.target.value)} className="field-input" /></div>
-          <div className="mb-4"><label className="field-label">Weeks worked / year</label>
-            <input type="number" value={weeks} onChange={(ev) => setWeeks(ev.target.value)} className="field-input" /></div>
+          <div className="mb-4"><label className="field-label" htmlFor={id("billable-hours")}>Billable hours / week</label>
+            <input id={id("billable-hours")} type="number" value={hrs} onChange={(ev) => setHrs(ev.target.value)} className="field-input" /></div>
+          <div className="mb-4"><label className="field-label" htmlFor={id("weeks-worked")}>Weeks worked / year</label>
+            <input id={id("weeks-worked")} type="number" value={weeks} onChange={(ev) => setWeeks(ev.target.value)} className="field-input" /></div>
         </div>
-        <div className="mb-4"><label className="field-label">Business expenses (per year)</label>
-          <div className="relative"><PFX s="$" /><input type="number" value={exp} onChange={(ev) => setExp(ev.target.value)} className="field-input pl-[30px]" /></div></div>
-        <div className="mb-4"><label className="field-label">Estimated tax rate</label>
-          <div className="relative"><PFX s="%" /><input type="number" value={tax} onChange={(ev) => setTax(ev.target.value)} className="field-input pl-[30px]" /></div></div>
+        <div className="mb-4"><label className="field-label" htmlFor={id("business-expenses")}>Business expenses (per year)</label>
+          <div className="relative"><PFX s="$" /><input id={id("business-expenses")} type="number" value={exp} onChange={(ev) => setExp(ev.target.value)} className="field-input pl-[30px]" /></div></div>
+        <div className="mb-4"><label className="field-label" htmlFor={id("tax-rate")}>Estimated tax rate</label>
+          <div className="relative"><PFX s="%" /><input id={id("tax-rate")} type="number" value={tax} onChange={(ev) => setTax(ev.target.value)} className="field-input pl-[30px]" /></div></div>
         <p className="text-xs text-muted mt-1">&quot;Billable hours&quot; should exclude admin, sales, and downtime — most full-timers bill far fewer hours than they work.</p>
       </div>
 

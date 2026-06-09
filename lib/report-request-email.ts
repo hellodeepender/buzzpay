@@ -181,6 +181,7 @@ export function renderReportEmail({
     "Educational contractor finance tools",
     "Privacy: https://www.buzzpay.app/privacy",
     "Affiliate disclosure: https://www.buzzpay.app/affiliate-disclosure",
+    "To stop future contractor finance emails, reply with unsubscribe.",
   ].join("\n");
 
   const text = [
@@ -257,6 +258,7 @@ export function renderReportEmail({
             <div style="font-weight:700;color:#1c1813">BuzzPay</div>
             <div>Educational contractor finance tools</div>
             <div style="margin-top:6px"><a href="https://www.buzzpay.app/privacy" style="color:#8a6b28;text-decoration:none;font-weight:700">Privacy</a> · <a href="https://www.buzzpay.app/affiliate-disclosure" style="color:#8a6b28;text-decoration:none;font-weight:700">Affiliate disclosure</a></div>
+            <div style="margin-top:6px">To stop future contractor finance emails, reply with unsubscribe.</div>
           </div>
         </div>
       </div>

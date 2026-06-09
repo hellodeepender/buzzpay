@@ -57,7 +57,7 @@ export default function ContractorFinancePage({ content }: { content: Contractor
           <>
             <section aria-labelledby="tool-chooser-heading" className="max-w-[1120px]">
               <div className="flex items-start gap-4 mb-4">
-                <span className="icon-tile shrink-0"><Calculator size={25} /></span>
+                <span className="icon-tile shrink-0" aria-hidden="true"><Calculator size={25} /></span>
                 <div>
                   <p className="text-xs uppercase font-bold text-honeyDeep mb-1">Choose what you need to calculate</p>
                   <h2 id="tool-chooser-heading" className="font-display text-2xl font-semibold text-ink">Pick the tool that matches the decision in front of you</h2>
@@ -69,7 +69,7 @@ export default function ContractorFinancePage({ content }: { content: Contractor
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="group flex h-full flex-col justify-between rounded-xl2 border-2 border-ink bg-card p-4 text-ink no-underline shadow-hard transition hover:-translate-y-0.5 hover:bg-paper2"
+                    className="group flex h-full flex-col justify-between rounded-xl2 border-2 border-ink bg-card p-4 text-ink no-underline shadow-hard transition hover:-translate-y-0.5 hover:bg-paper2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
                   >
                     <div>
                       <h3 className="font-display text-[18px] font-semibold leading-tight">{item.title}</h3>
@@ -147,7 +147,7 @@ export default function ContractorFinancePage({ content }: { content: Contractor
           <h2 id="related-heading" className="font-display text-2xl font-semibold mb-4">Related contractor-finance guides</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {related.map((item) => (
-              <Link key={item.href} href={item.href} className="block border-2 border-ink bg-card rounded-[8px] p-4 text-ink no-underline hover:bg-paper2 transition">
+              <Link key={item.href} href={item.href} className="block border-2 border-ink bg-card rounded-[8px] p-4 text-ink no-underline hover:bg-paper2 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper">
                 <h3 className="font-display text-lg font-semibold">{item.title}</h3>
                 <p className="text-[13.5px] text-ink2 mt-1">{item.description}</p>
               </Link>

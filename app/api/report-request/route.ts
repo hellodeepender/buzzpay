@@ -29,11 +29,16 @@ type ReportRequestPayload = {
   pagePath?: unknown;
   resultSnapshot?: unknown;
   honeypot?: unknown;
+  consentGiven?: unknown;
+  consentText?: unknown;
+  consentedAt?: unknown;
 };
 
 type DeliveryStatus = "sent" | "skipped" | "failed";
 const RATE_LIMIT_MAX = 5;
 const RATE_LIMIT_WINDOW_SECONDS = 10 * 60;
+const CONSENT_TEXT =
+  "By requesting this report, you agree to receive your calculator report by email and occasional BuzzPay contractor finance tools. You can opt out later. We do not sell your information. See our Privacy Policy.";
 
 function sanitizeString(value: unknown, maxLength: number) {
   if (typeof value !== "string") return "";
@@ -134,6 +139,8 @@ export async function POST(request: Request) {
   const pagePath = sanitizeString(payload.pagePath, 160);
   const resultSnapshot = sanitizeSnapshot(payload.resultSnapshot);
   const honeypot = sanitizeString(payload.honeypot, 120);
+  const consentGiven = payload.consentGiven === true;
+  const consentText = CONSENT_TEXT;
   const clientIp = getTrustedClientIp(request);
 
   if (process.env.NODE_ENV === "development") {
@@ -173,6 +180,9 @@ export async function POST(request: Request) {
     calculatorName: expectedCalculatorName,
     pagePath: pagePath || expectedPagePath,
     resultSnapshot,
+    consentGiven,
+    consentText,
+    consentedAt: new Date().toISOString(),
     requestedAt: new Date().toISOString(),
   };
 
@@ -185,6 +195,10 @@ export async function POST(request: Request) {
       });
     }
     return NextResponse.json({ ok: true, emailDeliveryStatus: "skipped" as DeliveryStatus });
+  }
+
+  if (!consentGiven) {
+    return NextResponse.json({ ok: false, error: "Consent is required to request this report." }, { status: 400 });
   }
 
   const [emailLimit, ipLimit] = await Promise.all([
@@ -234,6 +248,9 @@ export async function POST(request: Request) {
           calculator_name: reportRequest.calculatorName,
           page_path: reportRequest.pagePath,
           result_snapshot: reportRequest.resultSnapshot ?? null,
+          consent_given: reportRequest.consentGiven,
+          consent_text: reportRequest.consentText,
+          consented_at: reportRequest.consentedAt,
           email_delivery_status: isResendConfigured() ? "pending" : "skipped",
           email_error: isResendConfigured() ? null : "Resend not configured",
           resend_email_id: null,

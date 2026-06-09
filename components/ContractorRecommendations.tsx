@@ -80,7 +80,8 @@ export function RecommendationCard({
           target={external ? "_blank" : undefined}
           rel={external ? "sponsored nofollow noopener noreferrer" : undefined}
           onClick={handleClick}
-          className="inline-flex items-center justify-center rounded-[8px] border-2 border-ink bg-honey px-3.5 py-2 text-[13px] font-bold text-ink no-underline shadow-hardsm transition hover:-translate-y-[1px]"
+          aria-label={`${item.enabled ? item.ctaLabel : "Compare"} ${item.name}`}
+          className="inline-flex items-center justify-center rounded-[8px] border-2 border-ink bg-honey px-3.5 py-2 text-[13px] font-bold text-ink no-underline shadow-hardsm transition hover:-translate-y-[1px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
         >
           {ctaLabel}
         </a>
@@ -114,7 +115,7 @@ export function RecommendedNextSteps({
               currentPath,
             })
           }
-          className="inline-flex items-center rounded-full border border-ink/20 bg-paper px-3 py-2 text-[12.5px] font-semibold text-ink2 no-underline transition hover:border-ink hover:text-ink"
+          className="inline-flex items-center rounded-full border border-ink/20 bg-paper px-3 py-2 text-[12.5px] font-semibold text-ink2 no-underline transition hover:border-ink hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
         >
           {item.label}
         </Link>

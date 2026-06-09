@@ -12,7 +12,8 @@ export default function RecoCard({
         <p className="text-[13px] text-ink2 mt-0.5">{body}</p>
       </div>
       <a href={href} target="_blank" rel="sponsored nofollow"
-        className="bg-ink text-paper no-underline font-semibold text-[13.5px] py-2.5 px-4 rounded-full whitespace-nowrap hover:-translate-y-0.5 transition-transform">
+        aria-label={cta}
+        className="bg-ink text-paper no-underline font-semibold text-[13.5px] py-2.5 px-4 rounded-full whitespace-nowrap hover:-translate-y-0.5 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper">
         {cta}
       </a>
     </div>

@@ -1,17 +1,22 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const tabs = [
   { href: "/contractor-finance", label: "Contractor Finance", short: "Contractor" },
   { href: "/payment-fee-calculator", label: "Fee Calculator", short: "Fees" },
   { href: "/invoice-generator", label: "Invoice Generator", short: "Invoice" },
-  { href: "/freelance-rate-calculator", label: "Rate Calculator", short: "Rate" },
+  { href: "/freelance-rate-calculator", label: "Freelance Rate Calculator", short: "Rate" },
 ];
 
 export default function Header() {
+  const pathname = usePathname();
+
   return (
     <header className="pt-7 pb-2">
       <div className="flex items-center justify-between flex-wrap gap-3.5">
-        <Link href="/" className="flex items-center gap-2.5 font-display font-bold text-[26px] sm:text-[30px] tracking-tight text-ink no-underline">
+        <Link href="/" className="flex items-center gap-2.5 font-display font-bold text-[26px] sm:text-[30px] tracking-tight text-ink no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper">
           <span className="inline-grid place-items-center w-9 h-9 bg-honey border-2 border-ink rounded-[11px] shadow-hardsm font-black text-[20px] leading-none">b</span>
           buzzpay
         </Link>
@@ -19,14 +24,21 @@ export default function Header() {
           Free tools to <b className="text-ink">get paid</b> — for freelancers &amp; small businesses
         </div>
       </div>
-      <nav className="grid grid-cols-4 gap-1 mt-6 mb-7 border-2 border-ink rounded-[12px] sm:rounded-full bg-card p-[5px] shadow-hardsm">
-        {tabs.map((t) => (
-          <Link key={t.href} href={t.href}
-            className="text-center font-semibold text-[12px] sm:text-[14px] text-ink2 py-2.5 sm:py-[11px] px-1 sm:px-2 rounded-[8px] sm:rounded-full hover:text-ink hover:bg-paper2 transition">
-            <span className="sm:hidden">{t.short}</span>
-            <span className="hidden sm:inline">{t.label}</span>
-          </Link>
-        ))}
+      <nav className="grid grid-cols-4 gap-1 mt-6 mb-7 border-2 border-ink rounded-[12px] sm:rounded-full bg-card p-[5px] shadow-hardsm" aria-label="Primary">
+        {tabs.map((t) => {
+          const isCurrent = pathname === t.href || pathname?.startsWith(`${t.href}/`);
+          return (
+            <Link
+              key={t.href}
+              href={t.href}
+              aria-current={isCurrent ? "page" : undefined}
+              className="text-center font-semibold text-[12px] sm:text-[14px] text-ink2 py-2.5 sm:py-[11px] px-1 sm:px-2 rounded-[8px] sm:rounded-full hover:text-ink hover:bg-paper2 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
+            >
+              <span className="sm:hidden">{t.short}</span>
+              <span className="hidden sm:inline">{t.label}</span>
+            </Link>
+          );
+        })}
       </nav>
     </header>
   );

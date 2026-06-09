@@ -26,6 +26,7 @@ import {
 } from "@/lib/contractor-report-snapshots";
 
 type FieldProps = {
+  id: string;
   label: string;
   value: string;
   setValue: (value: string) => void;
@@ -36,15 +37,17 @@ type FieldProps = {
   suffix?: string;
 };
 
-function NumberField({ label, value, setValue, min, max, step = 1, prefix, suffix }: FieldProps) {
+function NumberField({ id, label, value, setValue, min, max, step = 1, prefix, suffix }: FieldProps) {
   const parsed = Number(value);
   const invalid = value !== "" && (!Number.isFinite(parsed) || parsed < min || parsed > max);
+  const helperId = `${id}-help`;
   return (
     <div>
-      <label className="field-label">{label}</label>
+      <label className="field-label" htmlFor={id}>{label}</label>
       <div className="relative">
         {prefix && <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted font-mono">{prefix}</span>}
         <input
+          id={id}
           type="number"
           value={value}
           min={min}
@@ -54,10 +57,11 @@ function NumberField({ label, value, setValue, min, max, step = 1, prefix, suffi
           onBlur={() => value !== "" && setValue(String(clamp(parsed, min, max)))}
           className={`field-input ${prefix ? "pl-8" : ""} ${suffix ? "pr-10" : ""} ${invalid ? "border-clay" : ""}`}
           aria-invalid={invalid}
+          aria-describedby={helperId}
         />
         {suffix && <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted font-mono">{suffix}</span>}
       </div>
-      <p className={`mt-1 text-[11px] ${invalid ? "text-clay" : "text-muted"}`}>
+      <p id={helperId} className={`mt-1 text-[11px] ${invalid ? "text-clay" : "text-muted"}`}>
         {invalid ? `Enter ${min.toLocaleString()} to ${max.toLocaleString()}.` : `Range: ${min.toLocaleString()}–${max.toLocaleString()}`}
       </p>
     </div>
@@ -67,8 +71,8 @@ function NumberField({ label, value, setValue, min, max, step = 1, prefix, suffi
 function FilingStatusField({ value, setValue }: { value: FilingStatus; setValue: (value: FilingStatus) => void }) {
   return (
     <div>
-      <label className="field-label">Filing status</label>
-      <select value={value} onChange={(event) => setValue(event.target.value as FilingStatus)} className="field-input">
+      <label className="field-label" htmlFor="filing-status">Filing status</label>
+      <select id="filing-status" value={value} onChange={(event) => setValue(event.target.value as FilingStatus)} className="field-input">
         <option value="single">Single</option>
         <option value="married">Married filing jointly</option>
         <option value="head">Head of household</option>
@@ -91,7 +95,7 @@ function ToolShell({
   return (
     <section aria-labelledby="tool-heading" className="max-w-[900px]">
       <div className="flex items-start gap-4 mb-5">
-        <span className="icon-tile shrink-0"><Calculator size={25} /></span>
+        <span className="icon-tile shrink-0" aria-hidden="true"><Calculator size={25} /></span>
         <div>
           <p className="text-xs uppercase font-bold text-honeyDeep mb-1">Interactive educational estimate</p>
           <h2 id="tool-heading" className="font-display text-2xl font-semibold text-ink">{title}</h2>
@@ -151,6 +155,7 @@ const n = (value: string, min: number, max: number) => clamp(Number(value), min,
 type SnapshotChangeHandler = (snapshot: ContractorReportSnapshot) => void;
 
 export function W2VsC2CCalculator({ onSnapshotChange }: { onSnapshotChange?: SnapshotChangeHandler }) {
+  const field = (suffix: string) => `w2-vs-c2c-${suffix}`;
   const [w2Salary, setW2Salary] = useState("120000");
   const [w2Bonus, setW2Bonus] = useState("10000");
   const [w2Benefits, setW2Benefits] = useState("18000");
@@ -215,16 +220,16 @@ export function W2VsC2CCalculator({ onSnapshotChange }: { onSnapshotChange?: Sna
   return (
     <>
       <ToolShell title="W2 vs C2C comparison calculator" description="Compare estimated retained economic value using your benefits, utilization, costs, tax-rate assumptions, and risk reserve.">
-        <NumberField label="W2 salary" value={w2Salary} setValue={setW2Salary} min={0} max={1000000} prefix="$" />
-        <NumberField label="Expected W2 bonus" value={w2Bonus} setValue={setW2Bonus} min={0} max={500000} prefix="$" />
-        <NumberField label="Employer-paid benefits" value={w2Benefits} setValue={setW2Benefits} min={0} max={250000} prefix="$" />
-        <NumberField label="Estimated W2 tax rate" value={w2TaxRate} setValue={setW2TaxRate} min={0} max={60} suffix="%" step={0.5} />
-        <NumberField label="C2C hourly rate" value={c2cRate} setValue={setC2cRate} min={1} max={1000} prefix="$" />
-        <NumberField label="Billable hours / week" value={hours} setValue={setHours} min={1} max={80} />
-        <NumberField label="Billable weeks / year" value={weeks} setValue={setWeeks} min={1} max={52} />
-        <NumberField label="Annual business expenses" value={expenses} setValue={setExpenses} min={0} max={500000} prefix="$" />
-        <NumberField label="Estimated C2C tax rate" value={c2cTaxRate} setValue={setC2cTaxRate} min={0} max={60} suffix="%" step={0.5} />
-        <NumberField label="Contract risk reserve" value={riskRate} setValue={setRiskRate} min={0} max={40} suffix="%" step={0.5} />
+        <NumberField id={field("w2-salary")} label="W2 salary" value={w2Salary} setValue={setW2Salary} min={0} max={1000000} prefix="$" />
+        <NumberField id={field("w2-bonus")} label="Expected W2 bonus" value={w2Bonus} setValue={setW2Bonus} min={0} max={500000} prefix="$" />
+        <NumberField id={field("w2-benefits")} label="Employer-paid benefits" value={w2Benefits} setValue={setW2Benefits} min={0} max={250000} prefix="$" />
+        <NumberField id={field("w2-tax-rate")} label="Estimated W2 tax rate" value={w2TaxRate} setValue={setW2TaxRate} min={0} max={60} suffix="%" step={0.5} />
+        <NumberField id={field("c2c-rate")} label="C2C hourly rate" value={c2cRate} setValue={setC2cRate} min={1} max={1000} prefix="$" />
+        <NumberField id={field("hours-week")} label="Billable hours / week" value={hours} setValue={setHours} min={1} max={80} />
+        <NumberField id={field("weeks-year")} label="Billable weeks / year" value={weeks} setValue={setWeeks} min={1} max={52} />
+        <NumberField id={field("business-expenses")} label="Annual business expenses" value={expenses} setValue={setExpenses} min={0} max={500000} prefix="$" />
+        <NumberField id={field("c2c-tax-rate")} label="Estimated C2C tax rate" value={c2cTaxRate} setValue={setC2cTaxRate} min={0} max={60} suffix="%" step={0.5} />
+        <NumberField id={field("risk-reserve")} label="Contract risk reserve" value={riskRate} setValue={setRiskRate} min={0} max={40} suffix="%" step={0.5} />
         <div className="space-y-3">
           <ResultCard label={c2cAhead ? "Estimated C2C advantage" : "Estimated W2 advantage"} value={money(Math.abs(result.difference))} tone={c2cAhead ? "green" : "red"}>
             <Row label="W2 cash compensation" value={money(result.w2Cash)} />
@@ -257,6 +262,7 @@ export function W2VsC2CCalculator({ onSnapshotChange }: { onSnapshotChange?: Sna
 }
 
 export function ContractorRateCalculator({ onSnapshotChange }: { onSnapshotChange?: SnapshotChangeHandler }) {
+  const field = (suffix: string) => `contractor-rate-calculator-${suffix}`;
   const [takeHome, setTakeHome] = useState("90000");
   const [benefits, setBenefits] = useState("12000");
   const [expenses, setExpenses] = useState("10000");
@@ -309,13 +315,13 @@ export function ContractorRateCalculator({ onSnapshotChange }: { onSnapshotChang
   return (
     <>
       <ToolShell title="Contractor rate calculator" description="Work backward from annual cash needs and realistic billable capacity to a minimum planning rate.">
-        <NumberField label="Target take-home cash" value={takeHome} setValue={setTakeHome} min={0} max={1000000} prefix="$" />
-        <NumberField label="Replacement benefits" value={benefits} setValue={setBenefits} min={0} max={250000} prefix="$" />
-        <NumberField label="Annual business expenses" value={expenses} setValue={setExpenses} min={0} max={500000} prefix="$" />
-        <NumberField label="Profit / risk reserve" value={reserve} setValue={setReserve} min={0} max={500000} prefix="$" />
-        <NumberField label="Estimated tax reserve" value={taxRate} setValue={setTaxRate} min={0} max={60} suffix="%" step={0.5} />
-        <NumberField label="Billable hours / week" value={hours} setValue={setHours} min={1} max={80} />
-        <NumberField label="Working weeks / year" value={weeks} setValue={setWeeks} min={1} max={52} />
+        <NumberField id={field("take-home")} label="Target take-home cash" value={takeHome} setValue={setTakeHome} min={0} max={1000000} prefix="$" />
+        <NumberField id={field("replacement-benefits")} label="Replacement benefits" value={benefits} setValue={setBenefits} min={0} max={250000} prefix="$" />
+        <NumberField id={field("annual-expenses")} label="Annual business expenses" value={expenses} setValue={setExpenses} min={0} max={500000} prefix="$" />
+        <NumberField id={field("profit-reserve")} label="Profit / risk reserve" value={reserve} setValue={setReserve} min={0} max={500000} prefix="$" />
+        <NumberField id={field("tax-reserve")} label="Estimated tax reserve" value={taxRate} setValue={setTaxRate} min={0} max={60} suffix="%" step={0.5} />
+        <NumberField id={field("billable-hours")} label="Billable hours / week" value={hours} setValue={setHours} min={1} max={80} />
+        <NumberField id={field("working-weeks")} label="Working weeks / year" value={weeks} setValue={setWeeks} min={1} max={52} />
         <div className="space-y-3">
           <ResultCard label="Minimum rounded planning rate" value={`${money(result.roundedHourlyRate)}/hr`}>
             <Row label="Annual billable hours" value={result.billableHours.toLocaleString()} />
@@ -348,6 +354,7 @@ export function ContractorRateCalculator({ onSnapshotChange }: { onSnapshotChang
 }
 
 export function SCorpSavingsCalculator({ onSnapshotChange }: { onSnapshotChange?: SnapshotChangeHandler }) {
+  const field = (suffix: string) => `s-corp-savings-calculator-${suffix}`;
   const [profit, setProfit] = useState("180000");
   const [salary, setSalary] = useState("110000");
   const [w2Wages, setW2Wages] = useState("0");
@@ -398,11 +405,11 @@ export function SCorpSavingsCalculator({ onSnapshotChange }: { onSnapshotChange?
   return (
     <>
       <ToolShell title="S-corporation savings calculator" description={`Compare a simplified baseline self-employment-tax estimate with payroll taxes on entered salary using ${TAX_YEAR} Social Security limits.`}>
-        <NumberField label="Profit before owner salary" value={profit} setValue={setProfit} min={0} max={2000000} prefix="$" />
-        <NumberField label="Supportable owner salary" value={salary} setValue={setSalary} min={0} max={1000000} prefix="$" />
-        <NumberField label="Other W2 wages" value={w2Wages} setValue={setW2Wages} min={0} max={1000000} prefix="$" />
-        <NumberField label="Payroll + professional costs" value={compliance} setValue={setCompliance} min={0} max={100000} prefix="$" />
-        <NumberField label="State entity costs" value={stateCosts} setValue={setStateCosts} min={0} max={100000} prefix="$" />
+        <NumberField id={field("profit")} label="Profit before owner salary" value={profit} setValue={setProfit} min={0} max={2000000} prefix="$" />
+        <NumberField id={field("salary")} label="Supportable owner salary" value={salary} setValue={setSalary} min={0} max={1000000} prefix="$" />
+        <NumberField id={field("other-w2-wages")} label="Other W2 wages" value={w2Wages} setValue={setW2Wages} min={0} max={1000000} prefix="$" />
+        <NumberField id={field("compliance-costs")} label="Payroll + professional costs" value={compliance} setValue={setCompliance} min={0} max={100000} prefix="$" />
+        <NumberField id={field("state-costs")} label="State entity costs" value={stateCosts} setValue={setStateCosts} min={0} max={100000} prefix="$" />
         <FilingStatusField value={filingStatus} setValue={setFilingStatus} />
         {n(salary, 0, 1000000) > n(profit, 0, 2000000) && <p className="sm:col-span-2 text-clay text-xs flex gap-2"><AlertTriangle size={16} /> Salary is capped at entered business profit for this estimate.</p>}
         <div className="space-y-3">
@@ -435,6 +442,7 @@ export function SCorpSavingsCalculator({ onSnapshotChange }: { onSnapshotChange?
 }
 
 export function LLCVsSCorpCalculator({ onSnapshotChange }: { onSnapshotChange?: SnapshotChangeHandler }) {
+  const field = (suffix: string) => `llc-vs-s-corp-${suffix}`;
   const [profit, setProfit] = useState("180000");
   const [salary, setSalary] = useState("110000");
   const [llcCosts, setLlcCosts] = useState("1200");
@@ -485,12 +493,12 @@ export function LLCVsSCorpCalculator({ onSnapshotChange }: { onSnapshotChange?: 
   return (
     <>
       <ToolShell title="LLC default tax vs S-corporation cost comparison" description="Compare a simplified federal employment-tax and administration-cost scenario. This does not decide legal form, eligibility, or reasonable salary.">
-        <NumberField label="Annual business profit" value={profit} setValue={setProfit} min={0} max={2000000} prefix="$" />
-        <NumberField label="Supportable S-corp salary" value={salary} setValue={setSalary} min={0} max={1000000} prefix="$" />
-        <NumberField label="Default LLC admin costs" value={llcCosts} setValue={setLlcCosts} min={0} max={100000} prefix="$" />
-        <NumberField label="S-corp payroll + admin costs" value={sCorpCosts} setValue={setSCorpCosts} min={0} max={100000} prefix="$" />
-        <NumberField label="Additional state entity costs" value={stateCosts} setValue={setStateCosts} min={0} max={100000} prefix="$" />
-        <NumberField label="Other W2 wages" value={w2Wages} setValue={setW2Wages} min={0} max={1000000} prefix="$" />
+        <NumberField id={field("profit")} label="Annual business profit" value={profit} setValue={setProfit} min={0} max={2000000} prefix="$" />
+        <NumberField id={field("salary")} label="Supportable S-corp salary" value={salary} setValue={setSalary} min={0} max={1000000} prefix="$" />
+        <NumberField id={field("llc-admin-costs")} label="Default LLC admin costs" value={llcCosts} setValue={setLlcCosts} min={0} max={100000} prefix="$" />
+        <NumberField id={field("scorp-admin-costs")} label="S-corp payroll + admin costs" value={sCorpCosts} setValue={setSCorpCosts} min={0} max={100000} prefix="$" />
+        <NumberField id={field("state-costs")} label="Additional state entity costs" value={stateCosts} setValue={setStateCosts} min={0} max={100000} prefix="$" />
+        <NumberField id={field("other-w2-wages")} label="Other W2 wages" value={w2Wages} setValue={setW2Wages} min={0} max={1000000} prefix="$" />
         <FilingStatusField value={filingStatus} setValue={setFilingStatus} />
         <div className="space-y-3">
           <ResultCard label={sCorpLower ? "S-corp scenario lower by" : "Default LLC scenario lower by"} value={money(Math.abs(result.estimatedDifference))} tone={sCorpLower ? "green" : "red"}>
@@ -522,6 +530,7 @@ export function LLCVsSCorpCalculator({ onSnapshotChange }: { onSnapshotChange?: 
 }
 
 export function Tax1099Calculator({ onSnapshotChange }: { onSnapshotChange?: SnapshotChangeHandler }) {
+  const field = (suffix: string) => `1099-tax-calculator-${suffix}`;
   const [revenue, setRevenue] = useState("150000");
   const [expenses, setExpenses] = useState("30000");
   const [w2Wages, setW2Wages] = useState("0");
@@ -576,13 +585,13 @@ export function Tax1099Calculator({ onSnapshotChange }: { onSnapshotChange?: Sna
   return (
     <>
       <ToolShell title="1099 tax planning calculator" description={`Estimate self-employment tax with ${TAX_YEAR} limits, then add your own blended federal and state income-tax rates.`}>
-        <NumberField label="Gross 1099 revenue" value={revenue} setValue={setRevenue} min={0} max={5000000} prefix="$" />
-        <NumberField label="Business expenses" value={expenses} setValue={setExpenses} min={0} max={5000000} prefix="$" />
-        <NumberField label="Other W2 wages" value={w2Wages} setValue={setW2Wages} min={0} max={1000000} prefix="$" />
+        <NumberField id={field("gross-revenue")} label="Gross 1099 revenue" value={revenue} setValue={setRevenue} min={0} max={5000000} prefix="$" />
+        <NumberField id={field("business-expenses")} label="Business expenses" value={expenses} setValue={setExpenses} min={0} max={5000000} prefix="$" />
+        <NumberField id={field("other-w2-wages")} label="Other W2 wages" value={w2Wages} setValue={setW2Wages} min={0} max={1000000} prefix="$" />
         <FilingStatusField value={filingStatus} setValue={setFilingStatus} />
-        <NumberField label="Estimated federal income-tax rate" value={federalRate} setValue={setFederalRate} min={0} max={50} suffix="%" step={0.5} />
-        <NumberField label="Estimated state/local rate" value={stateRate} setValue={setStateRate} min={0} max={20} suffix="%" step={0.5} />
-        <NumberField label="Payments / withholding already made" value={payments} setValue={setPayments} min={0} max={2000000} prefix="$" />
+        <NumberField id={field("federal-rate")} label="Estimated federal income-tax rate" value={federalRate} setValue={setFederalRate} min={0} max={50} suffix="%" step={0.5} />
+        <NumberField id={field("state-rate")} label="Estimated state/local rate" value={stateRate} setValue={setStateRate} min={0} max={20} suffix="%" step={0.5} />
+        <NumberField id={field("payments-made")} label="Payments / withholding already made" value={payments} setValue={setPayments} min={0} max={2000000} prefix="$" />
         <div className="space-y-3">
           <ResultCard label={due ? "Estimated remaining tax reserve" : "Estimated payments above model"} value={money(Math.abs(result.remainingBalance))} tone={due ? "honey" : "green"}>
             <Row label="Net business profit" value={money(result.netProfit)} strong />

@@ -34,7 +34,7 @@ input[type="number"] { -moz-appearance: textfield; }
 @layer components {
   .field-input {
     @apply w-full text-[15px] text-ink bg-paper border-2 border-ink rounded-[10px] px-[13px] py-[11px]
-           transition focus:outline-none focus:bg-white focus:shadow-hardsm;
+           transition focus:outline-none focus:bg-white focus:shadow-hardsm focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper;
   }
   .field-label { @apply block text-[13px] font-semibold text-ink2 mb-[6px]; }
 
@@ -43,7 +43,7 @@ input[type="number"] { -moz-appearance: textfield; }
   }
   .btn {
     @apply inline-flex items-center justify-center gap-2 border-2 border-ink font-semibold text-[15px]
-           rounded-[12px] px-5 py-3 no-underline transition;
+           rounded-[12px] px-5 py-3 no-underline transition focus:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper;
   }
   .btn-honey {
     @apply btn bg-honey text-ink shadow-hard hover:-translate-x-0.5 hover:-translate-y-0.5

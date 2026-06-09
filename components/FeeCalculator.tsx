@@ -12,6 +12,7 @@ const PRESETS = [
 ];
 
 export default function FeeCalculator({ initial }: { initial?: string }) {
+  const id = (suffix: string) => `fee-calculator-${suffix}`;
   const init = PRESETS.find((x) => x.name === initial) ?? PRESETS[0];
   const [mode, setMode] = useState<"forward" | "reverse">("forward");
   const [proc, setProc] = useState(init.name);
@@ -35,18 +36,18 @@ export default function FeeCalculator({ initial }: { initial?: string }) {
       <div className="bg-card border-2 border-ink rounded-xl2 shadow-hard p-5 sm:p-6">
         <div className="flex border-2 border-ink rounded-[10px] overflow-hidden mb-[18px]">
           {(["forward", "reverse"] as const).map((m) => (
-            <button key={m} onClick={() => setMode(m)}
-              className={`flex-1 font-semibold text-[13.5px] py-2.5 px-1.5 ${mode === m ? "bg-ink text-paper" : "bg-card text-ink2"}`}>
+            <button key={m} type="button" onClick={() => setMode(m)}
+              className={`flex-1 font-semibold text-[13.5px] py-2.5 px-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-inset ${mode === m ? "bg-ink text-paper" : "bg-card text-ink2"}`}>
               {m === "forward" ? "I'm charging an amount" : "I want to receive an amount"}
             </button>
           ))}
         </div>
 
-        <label className="field-label">Payment processor</label>
-        <div className="flex gap-2 flex-wrap mb-4">
+        <div className="field-label">Payment processor</div>
+        <div className="flex gap-2 flex-wrap mb-4" role="group" aria-label="Payment processor">
           {PRESETS.map((pr) => (
-            <button key={pr.name} onClick={() => pick(pr.name, pr.pct, pr.fix)}
-              className={`border-2 border-ink rounded-full text-[13px] font-semibold py-[7px] px-[13px] transition ${proc === pr.name ? "bg-honey shadow-hardsm" : "bg-card hover:bg-paper2"}`}>
+            <button key={pr.name} type="button" aria-pressed={proc === pr.name} onClick={() => pick(pr.name, pr.pct, pr.fix)}
+              className={`border-2 border-ink rounded-full text-[13px] font-semibold py-[7px] px-[13px] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper ${proc === pr.name ? "bg-honey shadow-hardsm" : "bg-card hover:bg-paper2"}`}>
               {pr.name}
             </button>
           ))}
@@ -54,26 +55,26 @@ export default function FeeCalculator({ initial }: { initial?: string }) {
 
         <div className="grid grid-cols-2 gap-3">
           <div className="mb-4">
-            <label className="field-label">Percentage fee</label>
+            <label className="field-label" htmlFor={id("percentage-fee")}>Percentage fee</label>
             <div className="relative">
               <span className="absolute left-[13px] top-1/2 -translate-y-1/2 font-bold text-muted font-mono">%</span>
-              <input type="number" step="0.01" value={pct} onChange={(e) => setPct(e.target.value)} className="field-input pl-[30px]" />
+              <input id={id("percentage-fee")} type="number" step="0.01" value={pct} onChange={(e) => setPct(e.target.value)} className="field-input pl-[30px]" />
             </div>
           </div>
           <div className="mb-4">
-            <label className="field-label">Fixed fee</label>
+            <label className="field-label" htmlFor={id("fixed-fee")}>Fixed fee</label>
             <div className="relative">
               <span className="absolute left-[13px] top-1/2 -translate-y-1/2 font-bold text-muted font-mono">$</span>
-              <input type="number" step="0.01" value={fix} onChange={(e) => setFix(e.target.value)} className="field-input pl-[30px]" />
+              <input id={id("fixed-fee")} type="number" step="0.01" value={fix} onChange={(e) => setFix(e.target.value)} className="field-input pl-[30px]" />
             </div>
           </div>
         </div>
 
         <div className="mb-4">
-          <label className="field-label">{mode === "forward" ? "Amount you're charging" : "Amount you want to receive"}</label>
+          <label className="field-label" htmlFor={id("amount")}>{mode === "forward" ? "Amount you're charging" : "Amount you want to receive"}</label>
           <div className="relative">
             <span className="absolute left-[13px] top-1/2 -translate-y-1/2 font-bold text-muted font-mono">$</span>
-            <input type="number" step="0.01" value={amt} onChange={(e) => setAmt(e.target.value)} className="field-input pl-[30px]" />
+            <input id={id("amount")} type="number" step="0.01" value={amt} onChange={(e) => setAmt(e.target.value)} className="field-input pl-[30px]" />
           </div>
         </div>
         <p className="text-xs text-muted mt-1">Default rates shown are common U.S. standard rates — edit them to match your region, card type, or negotiated pricing.</p>

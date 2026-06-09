@@ -13,6 +13,8 @@ type ExplanationResponse = {
   disclaimer: string;
 };
 
+type UiState = "idle" | "loading" | "success" | "rateLimited" | "dailyBudgetUnavailable" | "timeout" | "error";
+
 export default function AIResultExplanation({
   calculatorSlug,
   calculatorName,
@@ -22,13 +24,14 @@ export default function AIResultExplanation({
   calculatorName: string;
   snapshot: ContractorReportSnapshot;
 }) {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [state, setState] = useState<UiState>("idle");
+  const [message, setMessage] = useState("");
   const [explanation, setExplanation] = useState<ExplanationResponse | null>(null);
 
   async function explainResult() {
-    setLoading(true);
-    setError("");
+    setState("loading");
+    setMessage("Generating your explanation...");
+    setExplanation(null);
     track("ai_explanation_click", { calculatorSlug, calculatorName });
 
     try {
@@ -40,22 +43,41 @@ export default function AIResultExplanation({
       const payload = await response.json().catch(() => ({}));
 
       if (!response.ok || !payload?.ok) {
+        const reason = typeof payload?.reason === "string" ? payload.reason : "";
+        if (response.status === 429 || reason === "rate_limited" || reason === "per-ip-limit") {
+          setState("rateLimited");
+          setMessage("You’ve reached the request limit for now. Try again in a few minutes.");
+          track("ai_explanation_error", { calculatorSlug, calculatorName, reason: "rate_limited" });
+          return;
+        }
+        if (response.status === 503 && (reason === "daily_budget_exhausted" || reason === "daily-budget-exceeded")) {
+          setState("dailyBudgetUnavailable");
+          setMessage("AI explanations are temporarily unavailable today. Please try again later.");
+          track("ai_explanation_error", { calculatorSlug, calculatorName, reason: "daily_budget_unavailable" });
+          return;
+        }
+        if (response.status === 504 || reason === "timeout") {
+          setState("timeout");
+          setMessage("The explanation took too long to generate. Please try again.");
+          track("ai_explanation_error", { calculatorSlug, calculatorName, reason: "timeout" });
+          return;
+        }
         throw new Error(payload?.error || "We could not explain the result right now.");
       }
 
       setExplanation(payload.explanation as ExplanationResponse);
+      setState("success");
+      setMessage("Your explanation is ready.");
       track("ai_explanation_success", { calculatorSlug, calculatorName });
     } catch (err) {
-      const message = err instanceof Error ? err.message : "We could not explain the result right now.";
-      setError(message);
+      setState("error");
+      setMessage("We could not generate an explanation right now. Please try again.");
       track("ai_explanation_error", { calculatorSlug, calculatorName });
-    } finally {
-      setLoading(false);
     }
   }
 
   return (
-    <section className="w-full max-w-none min-w-0 overflow-visible border-2 border-ink rounded-xl2 bg-card p-5 sm:p-6 shadow-hard">
+    <section className="w-full max-w-none min-w-0 overflow-visible border-2 border-ink rounded-xl2 bg-card p-5 sm:p-6 shadow-hard" aria-busy={state === "loading"}>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <h2 className="font-display text-xl font-semibold text-ink">AI explanation</h2>
@@ -66,18 +88,28 @@ export default function AIResultExplanation({
         <button
           type="button"
           onClick={explainResult}
-          disabled={loading}
-          className="rounded-[8px] border-2 border-ink bg-honey px-3 py-2 text-[13px] font-bold text-ink shadow-hardsm disabled:cursor-wait disabled:opacity-70"
+          disabled={state === "loading"}
+          className="rounded-[8px] border-2 border-ink bg-honey px-3 py-2 text-[13px] font-bold text-ink shadow-hardsm disabled:cursor-wait disabled:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
         >
-          {loading ? "Explaining..." : "Explain my result with AI"}
+          {state === "loading" ? "Generating your explanation..." : "Explain my result with AI"}
         </button>
       </div>
 
-      {error && (
-        <p className="mt-4 rounded-[8px] border border-clay/40 bg-clay/10 px-3 py-2 text-[13px] font-medium text-clay">
-          {error}
-        </p>
-      )}
+      <div role="status" aria-live="polite" className="mt-4">
+        {(state === "loading" || state === "rateLimited" || state === "dailyBudgetUnavailable" || state === "timeout" || state === "error" || state === "success") && (
+          <p
+            className={`rounded-[8px] px-3 py-2 text-[13px] font-medium ${
+              state === "success"
+                ? "border border-moss/30 bg-moss/10 text-moss"
+                : state === "rateLimited" || state === "dailyBudgetUnavailable" || state === "timeout"
+                  ? "border border-honeyDeep/25 bg-honey/20 text-ink"
+                  : "border border-clay/40 bg-clay/10 text-clay"
+            }`}
+          >
+            {message}
+          </p>
+        )}
+      </div>
 
       {explanation && (
         <div className="mt-5 space-y-4">

@@ -37,12 +37,12 @@ function SidebarContent({
           {contractorFinanceLinks.map((item) => {
             const isCurrent = item.href === currentPath;
             return (
-              <Link
+                <Link
                 key={item.href}
                 href={item.href}
                 aria-current={isCurrent ? "page" : undefined}
                 onClick={() => trackSidebarToolClick(item.sidebarTitle, item.href, currentPath)}
-                className={`block rounded-[8px] border-2 px-3 py-2 text-[13.5px] font-semibold no-underline transition ${
+                className={`block rounded-[8px] border-2 px-3 py-2 text-[13.5px] font-semibold no-underline transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper ${
                   isCurrent
                     ? "border-ink bg-honey text-ink shadow-hardsm"
                     : "border-ink/20 bg-paper text-ink2 hover:border-ink hover:text-ink"
@@ -62,7 +62,8 @@ function SidebarContent({
           <a
             href={reportTarget}
             onClick={() => track("contractor_report_cta_click", { currentPath })}
-            className="mt-3 inline-flex items-center gap-2 rounded-[8px] border-2 border-ink bg-honey px-3 py-2 text-[13.5px] font-bold text-ink no-underline shadow-hardsm hover:translate-y-[-1px] transition"
+            aria-label="Open the free report form"
+            className="mt-3 inline-flex items-center gap-2 rounded-[8px] border-2 border-ink bg-honey px-3 py-2 text-[13.5px] font-bold text-ink no-underline shadow-hardsm hover:translate-y-[-1px] transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
           >
             Open report form
             <ArrowDownRight size={16} />
@@ -78,7 +79,7 @@ function SidebarContent({
               key={step.label}
               href={step.href}
               onClick={() => trackNextStepClick(step.label, step.sectionId, currentPath)}
-              className="text-left rounded-[8px] border border-ink/20 bg-card px-3 py-2 text-[13.5px] font-semibold text-ink2 hover:border-ink hover:text-ink transition no-underline"
+              className="text-left rounded-[8px] border border-ink/20 bg-card px-3 py-2 text-[13.5px] font-semibold text-ink2 hover:border-ink hover:text-ink transition no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
             >
               {step.label}
             </Link>
@@ -114,7 +115,7 @@ export default function ContractorFinanceSidebar({
             type="button"
             onClick={() => setOpen((value) => !value)}
             aria-expanded={open}
-            className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left font-display text-lg font-semibold text-ink"
+            className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left font-display text-lg font-semibold text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper rounded-t-xl2"
           >
             Related contractor tools
             <ChevronDown size={20} className={`shrink-0 transition ${open ? "rotate-180" : ""}`} />

@@ -27,7 +27,7 @@ export type AiRateLimitResult =
       ok: false;
       statusCode: 429 | 503;
       errorMessage: string;
-      reason: "per-ip-limit" | "global-limit" | "unavailable";
+      reason: "per-ip-limit" | "daily_budget_exhausted" | "unavailable";
     };
 
 function parseRateLimitRow(data: unknown) {
@@ -147,7 +147,7 @@ export async function evaluateAiRequestRateLimits({
       ok: false,
       statusCode: 503,
       errorMessage: "AI explanations are temporarily unavailable.",
-      reason: "global-limit",
+      reason: "daily_budget_exhausted",
     };
   }
 

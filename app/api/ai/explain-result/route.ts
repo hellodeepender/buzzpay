@@ -36,7 +36,10 @@ export async function POST(request: Request) {
   });
 
   if (!aiBudget.ok) {
-    return buildErrorResponse(aiBudget.errorMessage, aiBudget.statusCode);
+    return NextResponse.json(
+      { ok: false, error: aiBudget.errorMessage, reason: aiBudget.reason },
+      { status: aiBudget.statusCode },
+    );
   }
 
   const apiKey = process.env.OPENAI_API_KEY?.trim();
@@ -74,7 +77,10 @@ export async function POST(request: Request) {
       if (process.env.NODE_ENV === "development") {
         console.error("[ai-explain-result] OpenAI request failed", { status: response.status });
       }
-      return buildErrorResponse("We could not generate an explanation right now.", 502);
+      return NextResponse.json(
+        { ok: false, error: "We could not generate an explanation right now.", reason: "openai_error" },
+        { status: 502 },
+      );
     }
 
     const payload = (await response.json().catch(() => null)) as
@@ -89,7 +95,10 @@ export async function POST(request: Request) {
 
     const content = payload?.choices?.[0]?.message?.content;
     if (!content) {
-      return buildErrorResponse("We could not generate an explanation right now.", 502);
+      return NextResponse.json(
+        { ok: false, error: "We could not generate an explanation right now.", reason: "openai_error" },
+        { status: 502 },
+      );
     }
 
     let parsed: unknown;
@@ -99,12 +108,18 @@ export async function POST(request: Request) {
       if (process.env.NODE_ENV === "development") {
         console.error("[ai-explain-result] Invalid JSON from model");
       }
-      return buildErrorResponse("We could not generate an explanation right now.", 502);
+      return NextResponse.json(
+        { ok: false, error: "We could not generate an explanation right now.", reason: "openai_error" },
+        { status: 502 },
+      );
     }
 
     const explanation = normalizeExplainResultResponse(parsed);
     if (!explanation) {
-      return buildErrorResponse("We could not generate an explanation right now.", 502);
+      return NextResponse.json(
+        { ok: false, error: "We could not generate an explanation right now.", reason: "openai_error" },
+        { status: 502 },
+      );
     }
 
     return NextResponse.json({
@@ -113,12 +128,22 @@ export async function POST(request: Request) {
       model,
     });
   } catch (error) {
+    const aborted = error instanceof Error && error.name === "AbortError";
     if (process.env.NODE_ENV === "development") {
       console.error("[ai-explain-result] request failed", {
         errorType: error instanceof Error ? error.name : "unknown",
       });
     }
-    return buildErrorResponse("We could not generate an explanation right now.", 502);
+    return NextResponse.json(
+      {
+        ok: false,
+        error: aborted
+          ? "We could not generate an explanation right now."
+          : "We could not generate an explanation right now.",
+        reason: aborted ? "timeout" : "openai_error",
+      },
+      { status: aborted ? 504 : 502 },
+    );
   } finally {
     clearTimeout(timeoutId);
   }

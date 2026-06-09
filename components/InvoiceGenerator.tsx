@@ -8,6 +8,7 @@ import { Repeat } from "lucide-react";
 type Item = { d: string; q: number; p: number };
 
 export default function InvoiceGenerator() {
+  const id = (suffix: string) => `invoice-generator-${suffix}`;
   const [from, setFrom] = useState("Your Business");
   const [fromEmail, setFromEmail] = useState("you@email.com");
   const [to, setTo] = useState("Client Name");
@@ -64,14 +65,14 @@ export default function InvoiceGenerator() {
         <p className="text-muted text-[13.5px] mb-[18px]">Everything updates the preview instantly.</p>
 
         <div className="mb-[18px]">
-          <label className="field-label">Logo (optional)</label>
+          <label className="field-label" htmlFor={id("logo")}>Logo (optional)</label>
           {logo ? (
             <div className="flex items-center gap-3">
               <img src={logo} alt="Logo preview" className="h-12 max-w-[120px] object-contain border-2 border-ink rounded-[8px] bg-white p-1" />
-              <button onClick={() => setLogo(null)} className="text-clay font-semibold text-[13.5px] underline">Remove</button>
+        <button type="button" onClick={() => setLogo(null)} className="text-clay font-semibold text-[13.5px] underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper rounded-[4px]">Remove</button>
             </div>
           ) : (
-            <input type="file" accept="image/*" onChange={onLogo}
+            <input id={id("logo")} type="file" accept="image/*" onChange={onLogo}
               className="block w-full text-[13.5px] text-ink2 cursor-pointer file:mr-3 file:py-2 file:px-3 file:rounded-[8px] file:border-2 file:border-ink file:bg-honey file:font-semibold file:text-ink file:cursor-pointer" />
           )}
         </div>
@@ -83,42 +84,42 @@ export default function InvoiceGenerator() {
           <Fld label="Client email" v={toEmail} set={setToEmail} />
           <Fld label="Invoice #" v={no} set={setNo} />
           <div className="mb-4">
-            <label className="field-label">Currency</label>
-            <select value={cur} onChange={(e) => setCur(e.target.value)} className="field-input">
+            <label className="field-label" htmlFor={id("currency")}>Currency</label>
+            <select id={id("currency")} value={cur} onChange={(e) => setCur(e.target.value)} className="field-input">
               <option value="$">$ USD</option><option value="£">£ GBP</option>
               <option value="€">€ EUR</option><option value="C$">C$ CAD</option><option value="A$">A$ AUD</option>
             </select>
           </div>
-          <div className="mb-4"><label className="field-label">Issue date</label>
-            <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="field-input" /></div>
-          <div className="mb-4"><label className="field-label">Due date</label>
-            <input type="date" value={due} onChange={(e) => setDue(e.target.value)} className="field-input" /></div>
+          <div className="mb-4"><label className="field-label" htmlFor={id("issue-date")}>Issue date</label>
+            <input id={id("issue-date")} type="date" value={date} onChange={(e) => setDate(e.target.value)} className="field-input" /></div>
+          <div className="mb-4"><label className="field-label" htmlFor={id("due-date")}>Due date</label>
+            <input id={id("due-date")} type="date" value={due} onChange={(e) => setDue(e.target.value)} className="field-input" /></div>
         </div>
 
-        <label className="field-label">Line items</label>
+        <div className="field-label">Line items</div>
         <div className="grid grid-cols-[1fr_64px_96px_30px] gap-2 text-[11px] font-bold text-muted uppercase tracking-wide mb-1.5">
           <span>Description</span><span className="text-right">Qty</span><span className="text-right">Price</span><span />
         </div>
         {items.map((it, i) => (
           <div key={i} className="grid grid-cols-[1fr_64px_96px_30px] gap-2 mb-2 items-center">
-            <input className="field-input" value={it.d} onChange={(e) => setItem(i, "d", e.target.value)} />
-            <input className="field-input" type="number" value={it.q} onChange={(e) => setItem(i, "q", e.target.value)} />
-            <input className="field-input" type="number" value={it.p} onChange={(e) => setItem(i, "p", e.target.value)} />
-            <button onClick={() => delItem(i)} className="text-clay text-lg font-bold leading-none">×</button>
+            <input className="field-input" aria-label={`Description for line item ${i + 1}`} value={it.d} onChange={(e) => setItem(i, "d", e.target.value)} />
+            <input className="field-input" aria-label={`Quantity for line item ${i + 1}`} type="number" value={it.q} onChange={(e) => setItem(i, "q", e.target.value)} />
+            <input className="field-input" aria-label={`Price for line item ${i + 1}`} type="number" value={it.p} onChange={(e) => setItem(i, "p", e.target.value)} />
+            <button type="button" aria-label={`Remove line item ${i + 1}`} onClick={() => delItem(i)} className="text-clay text-lg font-bold leading-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper rounded-[4px]">×</button>
           </div>
         ))}
-        <button onClick={addItem} className="border-2 border-dashed border-ink rounded-[10px] w-full py-2.5 font-semibold text-[13.5px] hover:bg-paper2 transition mt-1">+ Add line item</button>
+        <button type="button" onClick={addItem} className="border-2 border-dashed border-ink rounded-[10px] w-full py-2.5 font-semibold text-[13.5px] hover:bg-paper2 transition mt-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper">+ Add line item</button>
 
         <div className="grid grid-cols-2 gap-3 mt-4">
-          <div className="mb-4"><label className="field-label">Tax rate</label>
+          <div className="mb-4"><label className="field-label" htmlFor={id("tax-rate")}>Tax rate</label>
             <div className="relative"><span className="absolute left-[13px] top-1/2 -translate-y-1/2 font-bold text-muted font-mono">%</span>
-              <input type="number" step="0.1" value={tax} onChange={(e) => setTax(e.target.value)} className="field-input pl-[30px]" /></div></div>
+              <input id={id("tax-rate")} type="number" step="0.1" value={tax} onChange={(e) => setTax(e.target.value)} className="field-input pl-[30px]" /></div></div>
         </div>
-        <div className="mb-4"><label className="field-label">Notes / payment terms</label>
-          <textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} className="field-input" /></div>
+        <div className="mb-4"><label className="field-label" htmlFor={id("notes")}>Notes / payment terms</label>
+          <textarea id={id("notes")} rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} className="field-input" /></div>
 
-        <button onClick={() => window.print()}
-          className="w-full bg-honey border-2 border-ink shadow-hardsm rounded-[10px] font-bold text-[15px] py-3.5 mt-2 hover:-translate-x-px hover:-translate-y-px transition">
+        <button type="button" onClick={() => window.print()}
+          className="w-full bg-honey border-2 border-ink shadow-hardsm rounded-[10px] font-bold text-[15px] py-3.5 mt-2 hover:-translate-x-px hover:-translate-y-px transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper">
           ↓ Save as PDF
         </button>
       </div>
@@ -172,10 +173,11 @@ export default function InvoiceGenerator() {
 }
 
 function Fld({ label, v, set }: { label: string; v: string; set: (s: string) => void }) {
+  const slug = label.toLowerCase().replace(/[^a-z0-9]+/g, "-");
   return (
     <div className="mb-4">
-      <label className="field-label">{label}</label>
-      <input className="field-input" value={v} onChange={(e) => set(e.target.value)} />
+      <label className="field-label" htmlFor={`invoice-generator-${slug}`}>{label}</label>
+      <input id={`invoice-generator-${slug}`} className="field-input" value={v} onChange={(e) => set(e.target.value)} />
     </div>
   );
 }

@@ -71,5 +71,10 @@ const aiComponentSource = readFileSync(new URL("../components/AIResultExplanatio
 assert.doesNotMatch(aiComponentSource, /useEffect\s*\(/);
 assert.match(aiComponentSource, /Explain my result with AI/);
 assert.match(aiComponentSource, /fetch\("\/api\/ai\/explain-result"/);
+assert.match(aiComponentSource, /Generating your explanation\.\.\./);
+assert.match(aiComponentSource, /rateLimited/);
+assert.match(aiComponentSource, /dailyBudgetUnavailable/);
+assert.match(aiComponentSource, /timeout/);
+assert.match(aiComponentSource, /aria-live="polite"/);
 
 console.log("ai explain result tests passed");
