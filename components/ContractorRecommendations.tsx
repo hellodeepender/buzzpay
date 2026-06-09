@@ -16,10 +16,10 @@ type NextStepLink = {
 };
 
 const defaultNextSteps: NextStepLink[] = [
-  { label: "Business banking", href: "#business-banking", sectionId: "business-banking" },
-  { label: "Bookkeeping", href: "#bookkeeping", sectionId: "bookkeeping" },
-  { label: "Payroll", href: "#payroll", sectionId: "payroll" },
-  { label: "Talk to a CPA", href: "#cpa-tax-professional", sectionId: "cpa-tax-professional" },
+  { label: "Business banking", href: "/go/business-banking", sectionId: "business-banking" },
+  { label: "Bookkeeping", href: "/go/bookkeeping", sectionId: "bookkeeping" },
+  { label: "Payroll", href: "/go/payroll", sectionId: "payroll" },
+  { label: "Talk to a CPA", href: "/go/cpa", sectionId: "cpa-tax-professional" },
 ];
 
 export function AffiliateDisclosure() {
@@ -158,7 +158,7 @@ export function ContractorBusinessStack({
   currentPath: string;
 }) {
   return (
-    <section aria-labelledby="contractor-business-stack-heading" className="mt-10 max-w-[1120px]">
+    <section id="recommended-next-steps" aria-labelledby="contractor-business-stack-heading" className="mt-10 max-w-[1120px] scroll-mt-24">
       <div className="flex flex-col gap-3">
         <div>
           <p className="text-xs uppercase font-bold text-honeyDeep mb-1">Recommendation stack</p>

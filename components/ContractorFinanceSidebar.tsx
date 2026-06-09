@@ -7,10 +7,10 @@ import { track } from "@vercel/analytics";
 import { contractorFinanceLinks } from "@/lib/contractor-finance";
 
 const nextSteps = [
-  { label: "Business banking", href: "#business-banking", sectionId: "business-banking" as const },
-  { label: "Bookkeeping", href: "#bookkeeping", sectionId: "bookkeeping" as const },
-  { label: "Payroll", href: "#payroll", sectionId: "payroll" as const },
-  { label: "Talk to a CPA", href: "#cpa-tax-professional", sectionId: "cpa-tax-professional" as const },
+  { label: "Business banking", href: "/go/business-banking", sectionId: "business-banking" as const },
+  { label: "Bookkeeping", href: "/go/bookkeeping", sectionId: "bookkeeping" as const },
+  { label: "Payroll", href: "/go/payroll", sectionId: "payroll" as const },
+  { label: "Talk to a CPA", href: "/go/cpa", sectionId: "cpa-tax-professional" as const },
 ];
 
 function trackSidebarToolClick(label: string, href: string, currentPath: string) {
