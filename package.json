@@ -8,6 +8,7 @@
     "start": "next start",
     "test:calculators": "node scripts/test-calculators.mjs",
     "test:report-request": "node scripts/test-report-request.mjs",
+    "test:report-delivery": "node scripts/test-report-email-delivery.mjs",
     "test:ai-explain-result": "node scripts/test-ai-explain-result.mjs",
     "lint": "next lint"
   },

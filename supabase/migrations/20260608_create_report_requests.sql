@@ -29,5 +29,8 @@ alter table public.report_requests
 alter table public.report_requests
   add column if not exists email_error text null;
 
+alter table public.report_requests
+  add column if not exists resend_email_id text null;
+
 comment on table public.report_requests is
   'Calculator report requests. Server-side service-role writes only until explicit policies are added.';

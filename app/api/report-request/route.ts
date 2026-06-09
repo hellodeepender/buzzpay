@@ -6,9 +6,9 @@ import {
 import { getResendServerClient, isResendConfigured } from "@/lib/resend/server";
 import {
   normalizeFirstName,
-  renderReportEmail,
   type ReportSnapshot,
 } from "@/lib/report-request-email";
+import { deliverReportEmail } from "@/lib/report-email-delivery";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const calculators = {
@@ -107,10 +107,12 @@ async function updateReportRequestStatus({
   id,
   status,
   errorMessage,
+  resendEmailId,
 }: {
   id: string;
   status: DeliveryStatus;
   errorMessage?: string | null;
+  resendEmailId?: string | null;
 }) {
   const supabase = getSupabaseServerClient();
   if (!supabase) return;
@@ -118,8 +120,13 @@ async function updateReportRequestStatus({
   const patch: Record<string, unknown> = { email_delivery_status: status };
   if (status === "sent") {
     patch.email_sent_at = new Date().toISOString();
+    patch.resend_email_id = resendEmailId ?? null;
     patch.email_error = null;
+  } else if (status === "skipped") {
+    patch.resend_email_id = null;
+    patch.email_error = errorMessage ?? "Resend not configured";
   } else if (status === "failed") {
+    patch.resend_email_id = null;
     patch.email_error = errorMessage ?? "Email delivery failed.";
   }
 
@@ -233,6 +240,8 @@ export async function POST(request: Request) {
           page_path: reportRequest.pagePath,
           result_snapshot: reportRequest.resultSnapshot ?? null,
           email_delivery_status: isResendConfigured() ? "pending" : "skipped",
+          email_error: isResendConfigured() ? null : "Resend not configured",
+          resend_email_id: null,
         })
         .select("id")
         .single();
@@ -257,40 +266,92 @@ export async function POST(request: Request) {
     });
   }
 
+  if (insertedId) {
+    console.info("Report request stored", {
+      calculatorSlug: reportRequest.calculatorSlug,
+      emailDeliveryStatus: isResendConfigured() ? "pending" : "skipped",
+    });
+  }
+
   let emailDeliveryStatus: DeliveryStatus = "skipped";
-  if (isResendConfigured()) {
-    emailDeliveryStatus = "failed";
+  if (!isResendConfigured()) {
+    console.info("Resend send skipped: missing env", {
+      calculatorSlug: reportRequest.calculatorSlug,
+      hasInsertedRecord: Boolean(insertedId),
+    });
+    if (insertedId) {
+      await updateReportRequestStatus({
+        id: insertedId,
+        status: "skipped",
+        errorMessage: "Resend not configured",
+      });
+    }
+  } else {
     try {
+      console.info("Resend send attempted", {
+        calculatorSlug: reportRequest.calculatorSlug,
+        hasInsertedRecord: Boolean(insertedId),
+      });
+
       const resend = getResendServerClient();
       const from = process.env.REPORT_FROM_EMAIL!;
       const replyTo = process.env.REPORT_REPLY_TO_EMAIL?.trim() || undefined;
-      const { text, html } = renderReportEmail({
+      const delivery = await deliverReportEmail({
+        resendClient: resend,
+        from,
+        replyTo,
+        to: reportRequest.email,
         firstName: reportRequest.firstName,
         calculatorName: reportRequest.calculatorName,
         pagePath: reportRequest.pagePath,
         resultSnapshot: reportRequest.resultSnapshot,
       });
-      const sent = await resend!.emails.send({
-        from,
-        to: [reportRequest.email],
-        subject: "Your BuzzPay contractor finance report",
-        text,
-        html,
-        ...(replyTo ? { replyTo } : {}),
-      });
 
-      if (sent.error) {
-        throw new Error("Resend request failed.");
-      }
-
-      emailDeliveryStatus = "sent";
-      if (insertedId) {
-        await updateReportRequestStatus({ id: insertedId, status: "sent" });
+      if (delivery.status === "sent") {
+        console.info("Resend send succeeded", {
+          calculatorSlug: reportRequest.calculatorSlug,
+          resendEmailId: delivery.resendEmailId,
+        });
+        emailDeliveryStatus = "sent";
+        if (insertedId) {
+          await updateReportRequestStatus({
+            id: insertedId,
+            status: "sent",
+            resendEmailId: delivery.resendEmailId,
+          });
+        }
+      } else if (delivery.status === "skipped") {
+        console.info("Resend send skipped: missing env", {
+          calculatorSlug: reportRequest.calculatorSlug,
+          hasInsertedRecord: Boolean(insertedId),
+        });
+        emailDeliveryStatus = "skipped";
+        if (insertedId) {
+          await updateReportRequestStatus({
+            id: insertedId,
+            status: "skipped",
+            errorMessage: delivery.emailError,
+          });
+        }
+      } else {
+        console.error("Resend send failed", {
+          calculatorSlug: reportRequest.calculatorSlug,
+          hasInsertedRecord: Boolean(insertedId),
+        });
+        emailDeliveryStatus = "failed";
+        if (insertedId) {
+          await updateReportRequestStatus({
+            id: insertedId,
+            status: "failed",
+            errorMessage: delivery.emailError,
+          });
+        }
       }
     } catch (error) {
       const safeMessage = "Email delivery failed.";
-      console.error("[report-request] Resend send failed", {
+      console.error("Resend send failed", {
         errorType: error instanceof Error ? error.name : "unknown",
+        calculatorSlug: reportRequest.calculatorSlug,
       });
       if (insertedId) {
         await updateReportRequestStatus({
