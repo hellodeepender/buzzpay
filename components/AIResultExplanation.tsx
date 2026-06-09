@@ -55,11 +55,11 @@ export default function AIResultExplanation({
   }
 
   return (
-    <section className="w-full min-w-0 overflow-visible border-2 border-ink rounded-[8px] bg-card p-4 shadow-hardsm">
+    <section className="w-full max-w-none min-w-0 overflow-visible border-2 border-ink rounded-xl2 bg-card p-5 sm:p-6 shadow-hard">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h2 className="font-display text-lg font-semibold text-ink">AI explanation</h2>
-          <p className="text-[12.5px] text-ink2 mt-1">
+          <h2 className="font-display text-xl font-semibold text-ink">AI explanation</h2>
+          <p className="text-[13px] text-ink2 mt-1">
             A short educational explanation based only on the calculator result snapshot.
           </p>
         </div>
@@ -74,14 +74,14 @@ export default function AIResultExplanation({
       </div>
 
       {error && (
-        <p className="mt-3 rounded-[8px] border border-clay/40 bg-clay/10 px-3 py-2 text-[13px] font-medium text-clay">
+        <p className="mt-4 rounded-[8px] border border-clay/40 bg-clay/10 px-3 py-2 text-[13px] font-medium text-clay">
           {error}
         </p>
       )}
 
       {explanation && (
-        <div className="mt-4 space-y-4">
-          <div className="w-full rounded-[8px] border border-ink/15 bg-paper2 p-4">
+        <div className="mt-5 space-y-4">
+          <div className="w-full rounded-xl2 border border-ink/15 bg-paper2 p-4 sm:p-5">
             <p className="text-[12px] uppercase font-bold tracking-wide text-muted">Summary</p>
             <p className="mt-1 text-[14px] leading-7 text-ink2 whitespace-pre-wrap break-words">
               {explanation.summary}
@@ -95,7 +95,7 @@ export default function AIResultExplanation({
             <DetailList title="Negotiation tips" items={explanation.negotiationTips} />
           )}
 
-          <div className="w-full rounded-[8px] border border-ink/15 bg-paper2 p-4">
+          <div className="w-full rounded-xl2 border border-ink/15 bg-paper2 p-4 sm:p-5">
             <p className="text-[12px] uppercase font-bold tracking-wide text-muted">Disclaimer</p>
             <p className="mt-1 text-[13px] leading-6 text-ink2 whitespace-pre-wrap break-words">{explanation.disclaimer}</p>
           </div>
@@ -107,7 +107,7 @@ export default function AIResultExplanation({
 
 function DetailList({ title, items }: { title: string; items: string[] }) {
   return (
-    <div className="w-full rounded-[8px] border border-ink/15 bg-paper2 p-4">
+    <div className="w-full rounded-xl2 border border-ink/15 bg-paper2 p-4 sm:p-5">
       <p className="text-[12px] uppercase font-bold tracking-wide text-muted">{title}</p>
       <ul className="mt-2 space-y-2 text-[13px] leading-6 text-ink2">
         {items.map((item) => (

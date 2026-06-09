@@ -81,12 +81,10 @@ function ToolShell({
   title,
   description,
   children,
-  assumptions,
 }: {
   title: string;
   description: string;
   children: React.ReactNode;
-  assumptions: string[];
 }) {
   const parts = Children.toArray(children);
   const results = parts.pop();
@@ -106,14 +104,19 @@ function ToolShell({
         </div>
         <div>
           {results}
-          <div className="mt-4 bg-paper2 border border-ink/20 rounded-[8px] p-4">
-            <h3 className="text-[13px] font-bold text-ink mb-2">Assumptions</h3>
-            <ul className="text-[12.5px] text-ink2 space-y-1.5 list-disc pl-4">
-              {assumptions.map((item) => <li key={item}>{item}</li>)}
-            </ul>
-          </div>
         </div>
       </div>
+    </section>
+  );
+}
+
+function AssumptionsPanel({ assumptions }: { assumptions: string[] }) {
+  return (
+    <section className="w-full max-w-[900px] mt-6 bg-paper2 border border-ink/20 rounded-[8px] p-4 sm:p-5">
+      <h3 className="text-[13px] font-bold text-ink mb-2">Assumptions</h3>
+      <ul className="text-[12.5px] text-ink2 space-y-1.5 list-disc pl-4">
+        {assumptions.map((item) => <li key={item}>{item}</li>)}
+      </ul>
     </section>
   );
 }
@@ -207,45 +210,49 @@ export function W2VsC2CCalculator({ onSnapshotChange }: { onSnapshotChange?: Sna
     onSnapshotChange?.(snapshot);
   }, [onSnapshotChange, snapshot]);
 
+  const assumptions = ["Benefits are added to W2 retained cash at the value you enter.", "Tax rates are user-provided blended estimates, not calculated liabilities.", "The C2C risk reserve is retained cash, not a tax or expense.", "Worker classification and entity eligibility are outside this calculation."];
+
   return (
-    <ToolShell title="W2 vs C2C comparison calculator" description="Compare estimated retained economic value using your benefits, utilization, costs, tax-rate assumptions, and risk reserve."
-      assumptions={["Benefits are added to W2 retained cash at the value you enter.", "Tax rates are user-provided blended estimates, not calculated liabilities.", "The C2C risk reserve is retained cash, not a tax or expense.", "Worker classification and entity eligibility are outside this calculation."]}>
-      <NumberField label="W2 salary" value={w2Salary} setValue={setW2Salary} min={0} max={1000000} prefix="$" />
-      <NumberField label="Expected W2 bonus" value={w2Bonus} setValue={setW2Bonus} min={0} max={500000} prefix="$" />
-      <NumberField label="Employer-paid benefits" value={w2Benefits} setValue={setW2Benefits} min={0} max={250000} prefix="$" />
-      <NumberField label="Estimated W2 tax rate" value={w2TaxRate} setValue={setW2TaxRate} min={0} max={60} suffix="%" step={0.5} />
-      <NumberField label="C2C hourly rate" value={c2cRate} setValue={setC2cRate} min={1} max={1000} prefix="$" />
-      <NumberField label="Billable hours / week" value={hours} setValue={setHours} min={1} max={80} />
-      <NumberField label="Billable weeks / year" value={weeks} setValue={setWeeks} min={1} max={52} />
-      <NumberField label="Annual business expenses" value={expenses} setValue={setExpenses} min={0} max={500000} prefix="$" />
-      <NumberField label="Estimated C2C tax rate" value={c2cTaxRate} setValue={setC2cTaxRate} min={0} max={60} suffix="%" step={0.5} />
-      <NumberField label="Contract risk reserve" value={riskRate} setValue={setRiskRate} min={0} max={40} suffix="%" step={0.5} />
-      <div className="space-y-3">
-        <ResultCard label={c2cAhead ? "Estimated C2C advantage" : "Estimated W2 advantage"} value={money(Math.abs(result.difference))} tone={c2cAhead ? "green" : "red"}>
-          <Row label="W2 cash compensation" value={money(result.w2Cash)} />
-          <Row label="W2 estimated tax" value={`-${money(result.w2EstimatedTax)}`} />
-          <Row label="W2 retained value + benefits" value={money(result.w2EstimatedValue)} strong />
-          <Row label="C2C gross billings" value={money(result.c2cGross)} />
-          <Row label="Expenses + risk reserve" value={`-${money(n(expenses, 0, 500000) + result.riskReserve)}`} />
-          <Row label="C2C estimated tax" value={`-${money(result.c2cEstimatedTax)}`} />
-          <Row label="C2C retained value" value={money(result.c2cEstimatedValue)} strong />
-        </ResultCard>
-        <section id="report-form-w2-vs-c2c" className="scroll-mt-24">
-          <EmailReportCapture
-            calculatorSlug="w2-vs-c2c"
-            calculatorName="W2 vs C2C Calculator"
-            instanceId="inline"
-            pagePath="/w2-vs-c2c"
-            resultSnapshot={snapshot}
-          />
-        </section>
-        <AIResultExplanation
-          calculatorSlug="w2-vs-c2c"
-          calculatorName="W2 vs C2C Calculator"
-          snapshot={snapshot}
-        />
-      </div>
-    </ToolShell>
+    <>
+      <ToolShell title="W2 vs C2C comparison calculator" description="Compare estimated retained economic value using your benefits, utilization, costs, tax-rate assumptions, and risk reserve.">
+        <NumberField label="W2 salary" value={w2Salary} setValue={setW2Salary} min={0} max={1000000} prefix="$" />
+        <NumberField label="Expected W2 bonus" value={w2Bonus} setValue={setW2Bonus} min={0} max={500000} prefix="$" />
+        <NumberField label="Employer-paid benefits" value={w2Benefits} setValue={setW2Benefits} min={0} max={250000} prefix="$" />
+        <NumberField label="Estimated W2 tax rate" value={w2TaxRate} setValue={setW2TaxRate} min={0} max={60} suffix="%" step={0.5} />
+        <NumberField label="C2C hourly rate" value={c2cRate} setValue={setC2cRate} min={1} max={1000} prefix="$" />
+        <NumberField label="Billable hours / week" value={hours} setValue={setHours} min={1} max={80} />
+        <NumberField label="Billable weeks / year" value={weeks} setValue={setWeeks} min={1} max={52} />
+        <NumberField label="Annual business expenses" value={expenses} setValue={setExpenses} min={0} max={500000} prefix="$" />
+        <NumberField label="Estimated C2C tax rate" value={c2cTaxRate} setValue={setC2cTaxRate} min={0} max={60} suffix="%" step={0.5} />
+        <NumberField label="Contract risk reserve" value={riskRate} setValue={setRiskRate} min={0} max={40} suffix="%" step={0.5} />
+        <div className="space-y-3">
+          <ResultCard label={c2cAhead ? "Estimated C2C advantage" : "Estimated W2 advantage"} value={money(Math.abs(result.difference))} tone={c2cAhead ? "green" : "red"}>
+            <Row label="W2 cash compensation" value={money(result.w2Cash)} />
+            <Row label="W2 estimated tax" value={`-${money(result.w2EstimatedTax)}`} />
+            <Row label="W2 retained value + benefits" value={money(result.w2EstimatedValue)} strong />
+            <Row label="C2C gross billings" value={money(result.c2cGross)} />
+            <Row label="Expenses + risk reserve" value={`-${money(n(expenses, 0, 500000) + result.riskReserve)}`} />
+            <Row label="C2C estimated tax" value={`-${money(result.c2cEstimatedTax)}`} />
+            <Row label="C2C retained value" value={money(result.c2cEstimatedValue)} strong />
+          </ResultCard>
+          <section id="report-form-w2-vs-c2c" className="scroll-mt-24">
+            <EmailReportCapture
+              calculatorSlug="w2-vs-c2c"
+              calculatorName="W2 vs C2C Calculator"
+              instanceId="inline"
+              pagePath="/w2-vs-c2c"
+              resultSnapshot={snapshot}
+            />
+          </section>
+        </div>
+      </ToolShell>
+      <AIResultExplanation
+        calculatorSlug="w2-vs-c2c"
+        calculatorName="W2 vs C2C Calculator"
+        snapshot={snapshot}
+      />
+      <AssumptionsPanel assumptions={assumptions} />
+    </>
   );
 }
 
@@ -297,42 +304,46 @@ export function ContractorRateCalculator({ onSnapshotChange }: { onSnapshotChang
     onSnapshotChange?.(snapshot);
   }, [onSnapshotChange, snapshot]);
 
+  const assumptions = ["The entered tax rate is a blended planning reserve.", "Benefits and expenses are treated as annual cash requirements.", "The rate assumes every entered billable hour is invoiced and collected.", "The rounded rate is a floor, not a market recommendation."];
+
   return (
-    <ToolShell title="Contractor rate calculator" description="Work backward from annual cash needs and realistic billable capacity to a minimum planning rate."
-      assumptions={["The entered tax rate is a blended planning reserve.", "Benefits and expenses are treated as annual cash requirements.", "The rate assumes every entered billable hour is invoiced and collected.", "The rounded rate is a floor, not a market recommendation."]}>
-      <NumberField label="Target take-home cash" value={takeHome} setValue={setTakeHome} min={0} max={1000000} prefix="$" />
-      <NumberField label="Replacement benefits" value={benefits} setValue={setBenefits} min={0} max={250000} prefix="$" />
-      <NumberField label="Annual business expenses" value={expenses} setValue={setExpenses} min={0} max={500000} prefix="$" />
-      <NumberField label="Profit / risk reserve" value={reserve} setValue={setReserve} min={0} max={500000} prefix="$" />
-      <NumberField label="Estimated tax reserve" value={taxRate} setValue={setTaxRate} min={0} max={60} suffix="%" step={0.5} />
-      <NumberField label="Billable hours / week" value={hours} setValue={setHours} min={1} max={80} />
-      <NumberField label="Working weeks / year" value={weeks} setValue={setWeeks} min={1} max={52} />
-      <div className="space-y-3">
-        <ResultCard label="Minimum rounded planning rate" value={`${money(result.roundedHourlyRate)}/hr`}>
-          <Row label="Annual billable hours" value={result.billableHours.toLocaleString()} />
-          <Row label="Taxable owner cash need" value={money(result.taxableCashNeed)} />
-          <Row label="Benefits + business costs" value={money(result.operatingCosts)} />
-          <Row label="Estimated tax reserve" value={money(result.estimatedTaxReserve)} />
-          <Row label="Required annual revenue" value={money(result.requiredRevenue)} strong />
-          <Row label="Suggested 8-hour day rate" value={money(result.dayRate)} />
-          <Row label="Monthly revenue target" value={money(result.monthlyRevenueTarget)} />
-        </ResultCard>
-        <section id="report-form-contractor-rate-calculator" className="scroll-mt-24">
-          <EmailReportCapture
-            calculatorSlug="contractor-rate-calculator"
-            calculatorName="Contractor Rate Calculator"
-            instanceId="inline"
-            pagePath="/contractor-rate-calculator"
-            resultSnapshot={snapshot}
-          />
-        </section>
-        <AIResultExplanation
-          calculatorSlug="contractor-rate-calculator"
-          calculatorName="Contractor Rate Calculator"
-          snapshot={snapshot}
-        />
-      </div>
-    </ToolShell>
+    <>
+      <ToolShell title="Contractor rate calculator" description="Work backward from annual cash needs and realistic billable capacity to a minimum planning rate.">
+        <NumberField label="Target take-home cash" value={takeHome} setValue={setTakeHome} min={0} max={1000000} prefix="$" />
+        <NumberField label="Replacement benefits" value={benefits} setValue={setBenefits} min={0} max={250000} prefix="$" />
+        <NumberField label="Annual business expenses" value={expenses} setValue={setExpenses} min={0} max={500000} prefix="$" />
+        <NumberField label="Profit / risk reserve" value={reserve} setValue={setReserve} min={0} max={500000} prefix="$" />
+        <NumberField label="Estimated tax reserve" value={taxRate} setValue={setTaxRate} min={0} max={60} suffix="%" step={0.5} />
+        <NumberField label="Billable hours / week" value={hours} setValue={setHours} min={1} max={80} />
+        <NumberField label="Working weeks / year" value={weeks} setValue={setWeeks} min={1} max={52} />
+        <div className="space-y-3">
+          <ResultCard label="Minimum rounded planning rate" value={`${money(result.roundedHourlyRate)}/hr`}>
+            <Row label="Annual billable hours" value={result.billableHours.toLocaleString()} />
+            <Row label="Taxable owner cash need" value={money(result.taxableCashNeed)} />
+            <Row label="Benefits + business costs" value={money(result.operatingCosts)} />
+            <Row label="Estimated tax reserve" value={money(result.estimatedTaxReserve)} />
+            <Row label="Required annual revenue" value={money(result.requiredRevenue)} strong />
+            <Row label="Suggested 8-hour day rate" value={money(result.dayRate)} />
+            <Row label="Monthly revenue target" value={money(result.monthlyRevenueTarget)} />
+          </ResultCard>
+          <section id="report-form-contractor-rate-calculator" className="scroll-mt-24">
+            <EmailReportCapture
+              calculatorSlug="contractor-rate-calculator"
+              calculatorName="Contractor Rate Calculator"
+              instanceId="inline"
+              pagePath="/contractor-rate-calculator"
+              resultSnapshot={snapshot}
+            />
+          </section>
+        </div>
+      </ToolShell>
+      <AIResultExplanation
+        calculatorSlug="contractor-rate-calculator"
+        calculatorName="Contractor Rate Calculator"
+        snapshot={snapshot}
+      />
+      <AssumptionsPanel assumptions={assumptions} />
+    </>
   );
 }
 
@@ -382,40 +393,44 @@ export function SCorpSavingsCalculator({ onSnapshotChange }: { onSnapshotChange?
     onSnapshotChange?.(snapshot);
   }, [onSnapshotChange, snapshot]);
 
+  const assumptions = [`Uses the ${TAX_YEAR} Social Security wage base of ${money(SOCIAL_SECURITY_WAGE_BASE)}.`, "Income tax on pass-through profit is not removed or modeled as savings.", "The salary is supplied by you; the calculator does not determine reasonable compensation.", "State taxes and professional costs are limited to the amounts entered."];
+
   return (
-    <ToolShell title="S-corporation savings calculator" description={`Compare a simplified baseline self-employment-tax estimate with payroll taxes on entered salary using ${TAX_YEAR} Social Security limits.`}
-      assumptions={[`Uses the ${TAX_YEAR} Social Security wage base of ${money(SOCIAL_SECURITY_WAGE_BASE)}.`, "Income tax on pass-through profit is not removed or modeled as savings.", "The salary is supplied by you; the calculator does not determine reasonable compensation.", "State taxes and professional costs are limited to the amounts entered."]}>
-      <NumberField label="Profit before owner salary" value={profit} setValue={setProfit} min={0} max={2000000} prefix="$" />
-      <NumberField label="Supportable owner salary" value={salary} setValue={setSalary} min={0} max={1000000} prefix="$" />
-      <NumberField label="Other W2 wages" value={w2Wages} setValue={setW2Wages} min={0} max={1000000} prefix="$" />
-      <NumberField label="Payroll + professional costs" value={compliance} setValue={setCompliance} min={0} max={100000} prefix="$" />
-      <NumberField label="State entity costs" value={stateCosts} setValue={setStateCosts} min={0} max={100000} prefix="$" />
-      <FilingStatusField value={filingStatus} setValue={setFilingStatus} />
-      {n(salary, 0, 1000000) > n(profit, 0, 2000000) && <p className="sm:col-span-2 text-clay text-xs flex gap-2"><AlertTriangle size={16} /> Salary is capped at entered business profit for this estimate.</p>}
-      <div className="space-y-3">
-        <ResultCard label={positive ? "Estimated net planning benefit" : "Estimated added annual cost"} value={money(Math.abs(result.netEstimatedBenefit))} tone={positive ? "green" : "red"}>
-          <Row label="Baseline estimated SE tax" value={money(result.baselineSeTax)} />
-          <Row label="Estimated tax on salary" value={`-${money(result.salaryPayrollTax)}`} />
-          <Row label="Gross employment-tax difference" value={money(result.grossEmploymentTaxDifference)} />
-          <Row label="Payroll, professional + state costs" value={`-${money(result.addedCosts)}`} />
-          <Row label="Potential non-wage profit" value={money(result.nonWageProfit)} strong />
-        </ResultCard>
-        <section id="report-form-s-corp-savings-calculator" className="scroll-mt-24">
-          <EmailReportCapture
-            calculatorSlug="s-corp-savings-calculator"
-            calculatorName="S-Corp Savings Calculator"
-            instanceId="inline"
-            pagePath="/s-corp-savings-calculator"
-            resultSnapshot={snapshot}
-          />
-        </section>
-        <AIResultExplanation
-          calculatorSlug="s-corp-savings-calculator"
-          calculatorName="S-Corp Savings Calculator"
-          snapshot={snapshot}
-        />
-      </div>
-    </ToolShell>
+    <>
+      <ToolShell title="S-corporation savings calculator" description={`Compare a simplified baseline self-employment-tax estimate with payroll taxes on entered salary using ${TAX_YEAR} Social Security limits.`}>
+        <NumberField label="Profit before owner salary" value={profit} setValue={setProfit} min={0} max={2000000} prefix="$" />
+        <NumberField label="Supportable owner salary" value={salary} setValue={setSalary} min={0} max={1000000} prefix="$" />
+        <NumberField label="Other W2 wages" value={w2Wages} setValue={setW2Wages} min={0} max={1000000} prefix="$" />
+        <NumberField label="Payroll + professional costs" value={compliance} setValue={setCompliance} min={0} max={100000} prefix="$" />
+        <NumberField label="State entity costs" value={stateCosts} setValue={setStateCosts} min={0} max={100000} prefix="$" />
+        <FilingStatusField value={filingStatus} setValue={setFilingStatus} />
+        {n(salary, 0, 1000000) > n(profit, 0, 2000000) && <p className="sm:col-span-2 text-clay text-xs flex gap-2"><AlertTriangle size={16} /> Salary is capped at entered business profit for this estimate.</p>}
+        <div className="space-y-3">
+          <ResultCard label={positive ? "Estimated net planning benefit" : "Estimated added annual cost"} value={money(Math.abs(result.netEstimatedBenefit))} tone={positive ? "green" : "red"}>
+            <Row label="Baseline estimated SE tax" value={money(result.baselineSeTax)} />
+            <Row label="Estimated tax on salary" value={`-${money(result.salaryPayrollTax)}`} />
+            <Row label="Gross employment-tax difference" value={money(result.grossEmploymentTaxDifference)} />
+            <Row label="Payroll, professional + state costs" value={`-${money(result.addedCosts)}`} />
+            <Row label="Potential non-wage profit" value={money(result.nonWageProfit)} strong />
+          </ResultCard>
+          <section id="report-form-s-corp-savings-calculator" className="scroll-mt-24">
+            <EmailReportCapture
+              calculatorSlug="s-corp-savings-calculator"
+              calculatorName="S-Corp Savings Calculator"
+              instanceId="inline"
+              pagePath="/s-corp-savings-calculator"
+              resultSnapshot={snapshot}
+            />
+          </section>
+        </div>
+      </ToolShell>
+      <AIResultExplanation
+        calculatorSlug="s-corp-savings-calculator"
+        calculatorName="S-Corp Savings Calculator"
+        snapshot={snapshot}
+      />
+      <AssumptionsPanel assumptions={assumptions} />
+    </>
   );
 }
 
@@ -465,40 +480,44 @@ export function LLCVsSCorpCalculator({ onSnapshotChange }: { onSnapshotChange?: 
     onSnapshotChange?.(snapshot);
   }, [onSnapshotChange, snapshot]);
 
+  const assumptions = [`Uses ${TAX_YEAR} federal Social Security limits.`, "Default LLC means a sole-owner self-employment-tax scenario for this estimate.", "Income tax is excluded because pass-through profit generally remains relevant under both scenarios.", "Legal protection, ownership restrictions, benefits, basis, and state-specific rules are not scored."];
+
   return (
-    <ToolShell title="LLC default tax vs S-corporation cost comparison" description="Compare a simplified federal employment-tax and administration-cost scenario. This does not decide legal form, eligibility, or reasonable salary."
-      assumptions={[`Uses ${TAX_YEAR} federal Social Security limits.`, "Default LLC means a sole-owner self-employment-tax scenario for this estimate.", "Income tax is excluded because pass-through profit generally remains relevant under both scenarios.", "Legal protection, ownership restrictions, benefits, basis, and state-specific rules are not scored."]}>
-      <NumberField label="Annual business profit" value={profit} setValue={setProfit} min={0} max={2000000} prefix="$" />
-      <NumberField label="Supportable S-corp salary" value={salary} setValue={setSalary} min={0} max={1000000} prefix="$" />
-      <NumberField label="Default LLC admin costs" value={llcCosts} setValue={setLlcCosts} min={0} max={100000} prefix="$" />
-      <NumberField label="S-corp payroll + admin costs" value={sCorpCosts} setValue={setSCorpCosts} min={0} max={100000} prefix="$" />
-      <NumberField label="Additional state entity costs" value={stateCosts} setValue={setStateCosts} min={0} max={100000} prefix="$" />
-      <NumberField label="Other W2 wages" value={w2Wages} setValue={setW2Wages} min={0} max={1000000} prefix="$" />
-      <FilingStatusField value={filingStatus} setValue={setFilingStatus} />
-      <div className="space-y-3">
-        <ResultCard label={sCorpLower ? "S-corp scenario lower by" : "Default LLC scenario lower by"} value={money(Math.abs(result.estimatedDifference))} tone={sCorpLower ? "green" : "red"}>
-          <Row label="Default LLC estimated SE tax" value={money(result.llcSeTax)} />
-          <Row label="Default LLC tax + admin" value={money(result.defaultLLCEstimatedCost)} strong />
-          <Row label="S-corp salary payroll tax" value={money(result.sCorpSalaryPayrollTax)} />
-          <Row label="S-corp payroll + entered costs" value={money(result.sCorpEstimatedCost)} strong />
-          <Row label="Potential non-wage profit" value={money(result.nonWageProfit)} />
-        </ResultCard>
-        <section id="report-form-llc-vs-s-corp" className="scroll-mt-24">
-          <EmailReportCapture
-            calculatorSlug="llc-vs-s-corp"
-            calculatorName="LLC vs S-Corp"
-            instanceId="inline"
-            pagePath="/llc-vs-s-corp"
-            resultSnapshot={snapshot}
-          />
-        </section>
-        <AIResultExplanation
-          calculatorSlug="llc-vs-s-corp"
-          calculatorName="LLC vs S-Corp"
-          snapshot={snapshot}
-        />
-      </div>
-    </ToolShell>
+    <>
+      <ToolShell title="LLC default tax vs S-corporation cost comparison" description="Compare a simplified federal employment-tax and administration-cost scenario. This does not decide legal form, eligibility, or reasonable salary.">
+        <NumberField label="Annual business profit" value={profit} setValue={setProfit} min={0} max={2000000} prefix="$" />
+        <NumberField label="Supportable S-corp salary" value={salary} setValue={setSalary} min={0} max={1000000} prefix="$" />
+        <NumberField label="Default LLC admin costs" value={llcCosts} setValue={setLlcCosts} min={0} max={100000} prefix="$" />
+        <NumberField label="S-corp payroll + admin costs" value={sCorpCosts} setValue={setSCorpCosts} min={0} max={100000} prefix="$" />
+        <NumberField label="Additional state entity costs" value={stateCosts} setValue={setStateCosts} min={0} max={100000} prefix="$" />
+        <NumberField label="Other W2 wages" value={w2Wages} setValue={setW2Wages} min={0} max={1000000} prefix="$" />
+        <FilingStatusField value={filingStatus} setValue={setFilingStatus} />
+        <div className="space-y-3">
+          <ResultCard label={sCorpLower ? "S-corp scenario lower by" : "Default LLC scenario lower by"} value={money(Math.abs(result.estimatedDifference))} tone={sCorpLower ? "green" : "red"}>
+            <Row label="Default LLC estimated SE tax" value={money(result.llcSeTax)} />
+            <Row label="Default LLC tax + admin" value={money(result.defaultLLCEstimatedCost)} strong />
+            <Row label="S-corp salary payroll tax" value={money(result.sCorpSalaryPayrollTax)} />
+            <Row label="S-corp payroll + entered costs" value={money(result.sCorpEstimatedCost)} strong />
+            <Row label="Potential non-wage profit" value={money(result.nonWageProfit)} />
+          </ResultCard>
+          <section id="report-form-llc-vs-s-corp" className="scroll-mt-24">
+            <EmailReportCapture
+              calculatorSlug="llc-vs-s-corp"
+              calculatorName="LLC vs S-Corp"
+              instanceId="inline"
+              pagePath="/llc-vs-s-corp"
+              resultSnapshot={snapshot}
+            />
+          </section>
+        </div>
+      </ToolShell>
+      <AIResultExplanation
+        calculatorSlug="llc-vs-s-corp"
+        calculatorName="LLC vs S-Corp"
+        snapshot={snapshot}
+      />
+      <AssumptionsPanel assumptions={assumptions} />
+    </>
   );
 }
 
@@ -552,43 +571,47 @@ export function Tax1099Calculator({ onSnapshotChange }: { onSnapshotChange?: Sna
     onSnapshotChange?.(snapshot);
   }, [onSnapshotChange, snapshot]);
 
+  const assumptions = [`Self-employment tax uses the ${TAX_YEAR} Social Security wage base of ${money(SOCIAL_SECURITY_WAGE_BASE)}.`, "Federal and state income-tax rates are user-provided blended estimates.", "The employer-equivalent SE tax deduction reduces the estimated federal income-tax base.", "Credits, QBI, itemized deductions, retirement contributions, local tax, and special situations are excluded."];
+
   return (
-    <ToolShell title="1099 tax planning calculator" description={`Estimate self-employment tax with ${TAX_YEAR} limits, then add your own blended federal and state income-tax rates.`}
-      assumptions={[`Self-employment tax uses the ${TAX_YEAR} Social Security wage base of ${money(SOCIAL_SECURITY_WAGE_BASE)}.`, "Federal and state income-tax rates are user-provided blended estimates.", "The employer-equivalent SE tax deduction reduces the estimated federal income-tax base.", "Credits, QBI, itemized deductions, retirement contributions, local tax, and special situations are excluded."]}>
-      <NumberField label="Gross 1099 revenue" value={revenue} setValue={setRevenue} min={0} max={5000000} prefix="$" />
-      <NumberField label="Business expenses" value={expenses} setValue={setExpenses} min={0} max={5000000} prefix="$" />
-      <NumberField label="Other W2 wages" value={w2Wages} setValue={setW2Wages} min={0} max={1000000} prefix="$" />
-      <FilingStatusField value={filingStatus} setValue={setFilingStatus} />
-      <NumberField label="Estimated federal income-tax rate" value={federalRate} setValue={setFederalRate} min={0} max={50} suffix="%" step={0.5} />
-      <NumberField label="Estimated state/local rate" value={stateRate} setValue={setStateRate} min={0} max={20} suffix="%" step={0.5} />
-      <NumberField label="Payments / withholding already made" value={payments} setValue={setPayments} min={0} max={2000000} prefix="$" />
-      <div className="space-y-3">
-        <ResultCard label={due ? "Estimated remaining tax reserve" : "Estimated payments above model"} value={money(Math.abs(result.remainingBalance))} tone={due ? "honey" : "green"}>
-          <Row label="Net business profit" value={money(result.netProfit)} strong />
-          <Row label="Self-employment tax" value={money(result.selfEmploymentTax)} />
-          <Row label="Estimated federal income tax" value={money(result.estimatedFederalIncomeTax)} />
-          <Row label="Estimated state/local tax" value={money(result.estimatedStateTax)} />
-          <Row label="Total estimated tax" value={money(result.totalEstimatedTax)} strong />
-          <Row label="Payments already made" value={`-${money(result.paymentsMade)}`} />
-          <Row label="Quarterly set-aside before payments" value={money(result.suggestedQuarterlySetAside)} />
-          <Row label="Effective rate on net profit" value={`${(result.effectiveTaxRate * 100).toFixed(1)}%`} />
-        </ResultCard>
-        <section id="report-form-1099-tax-calculator" className="scroll-mt-24">
-          <EmailReportCapture
-            calculatorSlug="1099-tax-calculator"
-            calculatorName="1099 Tax Calculator"
-            instanceId="inline"
-            pagePath="/1099-tax-calculator"
-            resultSnapshot={snapshot}
-          />
-        </section>
-        <AIResultExplanation
-          calculatorSlug="1099-tax-calculator"
-          calculatorName="1099 Tax Calculator"
-          snapshot={snapshot}
-        />
-      </div>
-    </ToolShell>
+    <>
+      <ToolShell title="1099 tax planning calculator" description={`Estimate self-employment tax with ${TAX_YEAR} limits, then add your own blended federal and state income-tax rates.`}>
+        <NumberField label="Gross 1099 revenue" value={revenue} setValue={setRevenue} min={0} max={5000000} prefix="$" />
+        <NumberField label="Business expenses" value={expenses} setValue={setExpenses} min={0} max={5000000} prefix="$" />
+        <NumberField label="Other W2 wages" value={w2Wages} setValue={setW2Wages} min={0} max={1000000} prefix="$" />
+        <FilingStatusField value={filingStatus} setValue={setFilingStatus} />
+        <NumberField label="Estimated federal income-tax rate" value={federalRate} setValue={setFederalRate} min={0} max={50} suffix="%" step={0.5} />
+        <NumberField label="Estimated state/local rate" value={stateRate} setValue={setStateRate} min={0} max={20} suffix="%" step={0.5} />
+        <NumberField label="Payments / withholding already made" value={payments} setValue={setPayments} min={0} max={2000000} prefix="$" />
+        <div className="space-y-3">
+          <ResultCard label={due ? "Estimated remaining tax reserve" : "Estimated payments above model"} value={money(Math.abs(result.remainingBalance))} tone={due ? "honey" : "green"}>
+            <Row label="Net business profit" value={money(result.netProfit)} strong />
+            <Row label="Self-employment tax" value={money(result.selfEmploymentTax)} />
+            <Row label="Estimated federal income tax" value={money(result.estimatedFederalIncomeTax)} />
+            <Row label="Estimated state/local tax" value={money(result.estimatedStateTax)} />
+            <Row label="Total estimated tax" value={money(result.totalEstimatedTax)} strong />
+            <Row label="Payments already made" value={`-${money(result.paymentsMade)}`} />
+            <Row label="Quarterly set-aside before payments" value={money(result.suggestedQuarterlySetAside)} />
+            <Row label="Effective rate on net profit" value={`${(result.effectiveTaxRate * 100).toFixed(1)}%`} />
+          </ResultCard>
+          <section id="report-form-1099-tax-calculator" className="scroll-mt-24">
+            <EmailReportCapture
+              calculatorSlug="1099-tax-calculator"
+              calculatorName="1099 Tax Calculator"
+              instanceId="inline"
+              pagePath="/1099-tax-calculator"
+              resultSnapshot={snapshot}
+            />
+          </section>
+        </div>
+      </ToolShell>
+      <AIResultExplanation
+        calculatorSlug="1099-tax-calculator"
+        calculatorName="1099 Tax Calculator"
+        snapshot={snapshot}
+      />
+      <AssumptionsPanel assumptions={assumptions} />
+    </>
   );
 }
 
