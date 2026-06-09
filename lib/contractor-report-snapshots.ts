@@ -1,5 +1,5 @@
 import { money } from "@/lib/format";
-import { TAX_YEAR } from "@/lib/contractor-calculators";
+import { SOCIAL_SECURITY_WAGE_BASE, TAX_YEAR } from "@/lib/contractor-calculators";
 
 export type ReportPrimitive = string | number | boolean | null;
 export type ReportSection = Record<string, ReportPrimitive>;
@@ -11,6 +11,7 @@ export type ContractorReportSnapshot = {
   timestamp: string;
   assumptionsVersion?: string;
   summary?: string;
+  assumptions?: string[];
   inputs?: ReportSection;
   results?: ReportSection;
 };
@@ -22,6 +23,7 @@ function baseSnapshot(
   calculatorName: string,
   pagePath: string,
   summary: string,
+  assumptions: string[],
   inputs: ReportSection,
   results: ReportSection,
 ): ContractorReportSnapshot {
@@ -32,6 +34,7 @@ function baseSnapshot(
     timestamp: new Date().toISOString(),
     assumptionsVersion: SNAPSHOT_VERSION,
     summary,
+    assumptions,
     inputs,
     results,
   };
@@ -74,6 +77,12 @@ export function buildW2VsC2CSnapshot(input: {
     input.calculatorName,
     input.pagePath,
     summary,
+    [
+      `Uses a ${TAX_YEAR} planning frame.`,
+      "Tax rates are user-provided blended estimates, not calculated liabilities.",
+      "C2C risk reserve is retained cash for volatility, not a tax or expense.",
+      "Worker classification and entity eligibility are outside the estimate.",
+    ],
     {
       "W2 salary": money(input.w2Salary),
       "W2 bonus": money(input.w2Bonus),
@@ -128,6 +137,12 @@ export function buildContractorRateSnapshot(input: {
     input.calculatorName,
     input.pagePath,
     summary,
+    [
+      "Tax reserve is a blended planning percentage, not a computed liability.",
+      "Benefits and business costs are treated as annual cash needs.",
+      "Billable hours assume every entered client hour is invoiced and collected.",
+      "The rounded rate is a floor, not a market recommendation.",
+    ],
     {
       "Target take-home cash": money(input.takeHomeTarget),
       "Replacement benefits": money(input.benefits),
@@ -181,6 +196,12 @@ export function buildSCorpSavingsSnapshot(input: {
     input.calculatorName,
     input.pagePath,
     summary,
+    [
+      `Uses the ${TAX_YEAR} Social Security wage base of ${money(SOCIAL_SECURITY_WAGE_BASE)}.`,
+      "Income tax on pass-through profit is not removed or modeled as savings.",
+      "Salary is supplied by the user; the calculator does not determine reasonable compensation.",
+      "State taxes and professional costs are limited to the entered amounts.",
+    ],
     {
       "Business profit before salary": money(input.profit),
       "Owner salary": money(input.salary),
@@ -230,6 +251,12 @@ export function buildLLCVsSCorpSnapshot(input: {
     input.calculatorName,
     input.pagePath,
     summary,
+    [
+      `Uses ${TAX_YEAR} federal Social Security limits.`,
+      "Default LLC means a sole-owner self-employment-tax scenario for this estimate.",
+      "Income tax is excluded because pass-through profit generally remains relevant under both scenarios.",
+      "Legal protection, ownership restrictions, benefits, basis, and state-specific rules are not scored.",
+    ],
     {
       "Annual business profit": money(input.annualProfit),
       "Supportable S-corp salary": money(input.reasonableSalary),
@@ -282,6 +309,12 @@ export function build1099TaxSnapshot(input: {
     input.calculatorName,
     input.pagePath,
     summary,
+    [
+      `Self-employment tax uses the ${TAX_YEAR} Social Security wage base of ${money(SOCIAL_SECURITY_WAGE_BASE)}.`,
+      "Federal and state income-tax rates are user-provided blended estimates.",
+      "The employer-equivalent SE tax deduction reduces the estimated federal income-tax base.",
+      "Credits, QBI, itemized deductions, retirement contributions, local tax, and special situations are excluded.",
+    ],
     {
       "Gross 1099 revenue": money(input.grossRevenue),
       "Business expenses": money(input.businessExpenses),

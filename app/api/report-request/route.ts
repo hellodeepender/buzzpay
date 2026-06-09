@@ -194,6 +194,9 @@ function renderReportEmail({
     ["/1099-tax-calculator", "1099 Tax Calculator"],
   ];
   const snapshotSummary = resultSnapshot?.summary && typeof resultSnapshot.summary === "string" ? resultSnapshot.summary : "";
+  const snapshotAssumptions = Array.isArray(resultSnapshot?.assumptions)
+    ? resultSnapshot.assumptions.filter((item): item is string => typeof item === "string" && item.trim().length > 0)
+    : [];
   const inputsSection = renderSnapshotEntries("Current inputs:", resultSnapshot?.inputs);
   const resultsSection = renderSnapshotEntries("Key results:", resultSnapshot?.results);
   const assumptionsVersion =
@@ -206,6 +209,7 @@ function renderReportEmail({
     assumptionsVersion ? `Snapshot version: ${assumptionsVersion}` : "",
     timestamp ? `Snapshot time: ${timestamp}` : "",
     snapshotSummary ? `Summary: ${snapshotSummary}` : "",
+    snapshotAssumptions.length ? `Assumptions:\n- ${snapshotAssumptions.join("\n- ")}` : "",
     inputsSection,
     resultsSection,
   ].filter(Boolean).join("\n\n");
@@ -213,6 +217,12 @@ function renderReportEmail({
     assumptionsVersion ? `<p><strong>Snapshot version:</strong> ${escapeHtml(assumptionsVersion)}</p>` : "",
     timestamp ? `<p><strong>Snapshot time:</strong> ${escapeHtml(timestamp)}</p>` : "",
     snapshotSummary ? `<p><strong>Summary:</strong> ${escapeHtml(snapshotSummary)}</p>` : "",
+    snapshotAssumptions.length
+      ? `<p><strong>Assumptions</strong></p><ul>${snapshotAssumptions
+          .slice(0, 8)
+          .map((item) => `<li>${escapeHtml(item)}</li>`)
+          .join("")}</ul>`
+      : "",
     renderSnapshotHtmlList("Current inputs", resultSnapshot?.inputs),
     renderSnapshotHtmlList("Key results", resultSnapshot?.results),
   ].join("");
