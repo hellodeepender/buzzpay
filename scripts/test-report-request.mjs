@@ -35,17 +35,26 @@ const snapshot = {
 };
 
 const withSnapshot = renderReportEmail({
-  firstName: "Alex",
+  firstName: "  Alex<script>  ",
   calculatorName: "W2 vs C2C Calculator",
   pagePath: "/w2-vs-c2c",
   resultSnapshot: snapshot,
 });
 
 assert.match(withSnapshot.text, /Here is your BuzzPay contractor finance report\./);
+assert.match(withSnapshot.text, /Hi Alex,/);
 assert.match(withSnapshot.text, /W2 salary: \$120,000\.00/);
 assert.match(withSnapshot.text, /Estimated difference: \$12,000\.00/);
 assert.match(withSnapshot.text, /Plain-English interpretation:\s+C2C appears ahead by \$12,000\./);
 assert.match(withSnapshot.text, /W2 vs C2C/);
+assert.match(withSnapshot.html, /BuzzPay/);
+assert.match(withSnapshot.html, /Contractor finance report/);
+assert.match(withSnapshot.html, /Report summary/);
+assert.match(withSnapshot.html, /Key inputs/);
+assert.match(withSnapshot.html, /Key results/);
+assert.match(withSnapshot.html, /Assumptions/);
+assert.match(withSnapshot.html, /Disclaimer/);
+assert.match(withSnapshot.html, /Open calculator/);
 
 const fallback = renderReportEmail({
   calculatorName: "W2 vs C2C Calculator",
@@ -53,6 +62,7 @@ const fallback = renderReportEmail({
 });
 
 assert.match(fallback.text, /Your BuzzPay contractor finance report request is on file\./);
+assert.match(fallback.html, /Your BuzzPay contractor finance report request is on file\./);
 assert.doesNotMatch(fallback.text, /Key inputs/);
 
 console.log("report request tests passed");

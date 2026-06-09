@@ -4,7 +4,11 @@ import {
   isSupabaseConfigured,
 } from "@/lib/supabase/server";
 import { getResendServerClient, isResendConfigured } from "@/lib/resend/server";
-import { renderReportEmail, type ReportSnapshot } from "@/lib/report-request-email";
+import {
+  normalizeFirstName,
+  renderReportEmail,
+  type ReportSnapshot,
+} from "@/lib/report-request-email";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const calculators = {
@@ -142,7 +146,7 @@ export async function POST(request: Request) {
   }
 
   const email = sanitizeString(payload.email, 254).toLowerCase();
-  const firstName = sanitizeString(payload.firstName, 80);
+  const firstName = normalizeFirstName(payload.firstName);
   const calculatorSlug = sanitizeString(payload.calculatorSlug, 80);
   const calculatorName = sanitizeString(payload.calculatorName, 120);
   const pagePath = sanitizeString(payload.pagePath, 160);
