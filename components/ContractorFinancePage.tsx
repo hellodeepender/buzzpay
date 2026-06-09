@@ -17,6 +17,7 @@ import {
   type ContractorPageContent,
 } from "@/lib/contractor-finance";
 import { guideArticleList } from "@/lib/contractor-finance-guides";
+import { contractorRateProfessions } from "@/lib/contractor-rate-professions";
 import { buildContractorRecommendationCategories } from "@/lib/contractor-recommendations";
 
 const REVIEW_DATE = "2026-06-08";
@@ -88,6 +89,32 @@ export default function ContractorFinancePage({ content }: { content: Contractor
             </div>
             <AffiliateDisclosure />
             <ContractorBusinessStack categories={recommendationCategories} currentPath={content.path} />
+            <section className="mt-12 max-w-[1120px]" aria-labelledby="rate-professions-heading">
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <div>
+                  <p className="text-xs uppercase font-bold text-honeyDeep mb-1">Profession pilot</p>
+                  <h2 id="rate-professions-heading" className="font-display text-2xl font-semibold text-ink">
+                    Try a profession-specific rate starting point
+                  </h2>
+                  <p className="mt-1 max-w-[760px] text-[14.5px] text-ink2">
+                    These pages are a small SEO pilot built from shared assumptions, not market-rate claims. They help you tune utilization and overhead before you make a pricing decision.
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                {contractorRateProfessions.map((profession) => (
+                  <Link
+                    key={profession.slug}
+                    href={`/contractor-rate-calculator/${profession.slug}`}
+                    className="block border-2 border-ink bg-card rounded-xl2 p-4 text-ink no-underline shadow-hard hover:bg-paper2 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
+                  >
+                    <h3 className="font-display text-lg font-semibold">{profession.label}</h3>
+                    <p className="mt-2 text-[13.5px] leading-relaxed text-ink2">{profession.description}</p>
+                    <span className="mt-4 inline-block text-[13px] font-semibold text-honeyDeep">Open profession page →</span>
+                  </Link>
+                ))}
+              </div>
+            </section>
             <section className="mt-12 max-w-[1120px]" aria-labelledby="contractor-articles-heading">
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div>
@@ -114,6 +141,34 @@ export default function ContractorFinancePage({ content }: { content: Contractor
         ) : (
           <>
             <ContractorFinanceInteractive path={content.path} />
+            {content.path === "/contractor-rate-calculator" && (
+              <section className="mt-10 max-w-[1120px]" aria-labelledby="rate-professions-heading">
+                <div className="flex items-start justify-between gap-4 mb-4">
+                  <div>
+                    <p className="text-xs uppercase font-bold text-honeyDeep mb-1">Profession pilot</p>
+                    <h2 id="rate-professions-heading" className="font-display text-2xl font-semibold text-ink">
+                      Compare profession-specific rate starting points
+                    </h2>
+                    <p className="mt-1 max-w-[760px] text-[14.5px] text-ink2">
+                      The pilot pages explain the assumptions behind five common contractor roles and link back to the shared calculator and W2 comparison tool.
+                    </p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                  {contractorRateProfessions.map((profession) => (
+                    <Link
+                      key={profession.slug}
+                      href={`/contractor-rate-calculator/${profession.slug}`}
+                      className="block border-2 border-ink bg-card rounded-xl2 p-4 text-ink no-underline shadow-hard hover:bg-paper2 transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper"
+                    >
+                      <h3 className="font-display text-lg font-semibold">{profession.label}</h3>
+                      <p className="mt-2 text-[13.5px] leading-relaxed text-ink2">{profession.description}</p>
+                      <span className="mt-4 inline-block text-[13px] font-semibold text-honeyDeep">Open profession page →</span>
+                    </Link>
+                  ))}
+                </div>
+              </section>
+            )}
             <AffiliateDisclosure />
             <ContractorBusinessStack categories={recommendationCategories} currentPath={content.path} />
           </>
