@@ -8,6 +8,7 @@ export default function Footer() {
         <Link href="/contractor-finance" className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper rounded-[6px]">Contractor Finance</Link>
         <Link href="/templates" className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper rounded-[6px]">Invoice Templates</Link>
         <Link href="/about" className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper rounded-[6px]">About</Link>
+        <Link href="/cookie-policy" className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper rounded-[6px]">Cookie Policy</Link>
         <Link href="/affiliate-disclosure" className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper rounded-[6px]">Affiliate Disclosure</Link>
         <Link href="/privacy" className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-honeyDeep focus-visible:ring-offset-2 focus-visible:ring-offset-paper rounded-[6px]">Privacy &amp; disclosure</Link>
       </nav>
