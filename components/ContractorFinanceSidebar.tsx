@@ -6,14 +6,19 @@ import { ChevronDown, ArrowDownRight } from "lucide-react";
 import { track } from "@vercel/analytics";
 import { contractorFinanceLinks } from "@/lib/contractor-finance";
 
-const nextSteps = ["Business banking", "Bookkeeping", "Payroll", "Talk to a CPA"];
+const nextSteps = [
+  { label: "Business banking", href: "#business-banking", sectionId: "business-banking" as const },
+  { label: "Bookkeeping", href: "#bookkeeping", sectionId: "bookkeeping" as const },
+  { label: "Payroll", href: "#payroll", sectionId: "payroll" as const },
+  { label: "Talk to a CPA", href: "#cpa-tax-professional", sectionId: "cpa-tax-professional" as const },
+];
 
 function trackSidebarToolClick(label: string, href: string, currentPath: string) {
   track("contractor_sidebar_tool_click", { label, href, currentPath });
 }
 
-function trackNextStepClick(label: string, currentPath: string) {
-  track("contractor_next_step_click", { label, currentPath });
+function trackNextStepClick(label: string, sectionId: string, currentPath: string) {
+  track("contractor_next_step_click", { label, sectionId, currentPath });
 }
 
 function SidebarContent({
@@ -69,14 +74,14 @@ function SidebarContent({
         <h2 className="text-[12px] uppercase tracking-wide font-bold text-muted mb-2">Next Steps</h2>
         <div className="grid grid-cols-1 gap-1.5">
           {nextSteps.map((step) => (
-            <button
-              key={step}
-              type="button"
-              onClick={() => trackNextStepClick(step, currentPath)}
-              className="text-left rounded-[8px] border border-ink/20 bg-card px-3 py-2 text-[13.5px] font-semibold text-ink2 hover:border-ink hover:text-ink transition"
+            <Link
+              key={step.label}
+              href={step.href}
+              onClick={() => trackNextStepClick(step.label, step.sectionId, currentPath)}
+              className="text-left rounded-[8px] border border-ink/20 bg-card px-3 py-2 text-[13.5px] font-semibold text-ink2 hover:border-ink hover:text-ink transition no-underline"
             >
-              {step}
-            </button>
+              {step.label}
+            </Link>
           ))}
         </div>
       </section>

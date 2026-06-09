@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, Calculator } from "lucide-react";
+import { Calculator } from "lucide-react";
 import ContractorFinanceInteractive from "@/components/ContractorFinanceInteractive";
 import {
   FinancialDisclaimer,
@@ -7,50 +7,23 @@ import {
   Methodology,
   Sources,
 } from "@/components/CalculatorTrust";
+import {
+  AffiliateDisclosure,
+  ContractorBusinessStack,
+} from "@/components/ContractorRecommendations";
 import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/JsonLd";
 import {
   contractorFinanceLinks,
   type ContractorPageContent,
 } from "@/lib/contractor-finance";
+import { buildContractorRecommendationCategories } from "@/lib/contractor-recommendations";
 
 const REVIEW_DATE = "2026-06-08";
-
-function ContractorToolChooser() {
-  return (
-    <section aria-labelledby="tool-chooser-heading" className="max-w-[1120px]">
-      <div className="flex items-start gap-4 mb-4">
-        <span className="icon-tile shrink-0"><Calculator size={25} /></span>
-        <div>
-          <p className="text-xs uppercase font-bold text-honeyDeep mb-1">Choose what you need to calculate</p>
-          <h2 id="tool-chooser-heading" className="font-display text-2xl font-semibold text-ink">Pick the tool that matches the decision in front of you</h2>
-          <p className="text-[14.5px] text-ink2 mt-1">Start with the calculator that fits your situation, then use the longer guides below for context, assumptions, and follow-up review.</p>
-        </div>
-      </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3">
-        {contractorFinanceLinks.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className="group flex h-full flex-col justify-between rounded-xl2 border-2 border-ink bg-card p-4 text-ink no-underline shadow-hard transition hover:-translate-y-0.5 hover:bg-paper2"
-          >
-            <div>
-              <h3 className="font-display text-[18px] font-semibold leading-tight">{item.title}</h3>
-              <p className="mt-2 text-[13.5px] leading-relaxed text-ink2">{item.description}</p>
-            </div>
-            <span className="mt-4 inline-flex items-center justify-center gap-2 self-start rounded-[8px] border-2 border-ink bg-honey px-3.5 py-2 text-[13px] font-bold text-ink transition group-hover:-translate-y-[1px]">
-              Open calculator
-              <ArrowUpRight size={16} />
-            </span>
-          </Link>
-        ))}
-      </div>
-    </section>
-  );
-}
 
 export default function ContractorFinancePage({ content }: { content: ContractorPageContent }) {
   const related = contractorFinanceLinks.filter((item) => item.href !== content.path);
   const isHub = content.path === "/contractor-finance";
+  const recommendationCategories = buildContractorRecommendationCategories();
   const breadcrumbs = content.path === "/contractor-finance"
     ? [
         { name: "Home", path: "/" },
@@ -82,13 +55,45 @@ export default function ContractorFinancePage({ content }: { content: Contractor
 
         {isHub ? (
           <>
-            <ContractorToolChooser />
+            <section aria-labelledby="tool-chooser-heading" className="max-w-[1120px]">
+              <div className="flex items-start gap-4 mb-4">
+                <span className="icon-tile shrink-0"><Calculator size={25} /></span>
+                <div>
+                  <p className="text-xs uppercase font-bold text-honeyDeep mb-1">Choose what you need to calculate</p>
+                  <h2 id="tool-chooser-heading" className="font-display text-2xl font-semibold text-ink">Pick the tool that matches the decision in front of you</h2>
+                  <p className="text-[14.5px] text-ink2 mt-1">Start with the calculator that fits your situation, then use the longer guides below for context, assumptions, and follow-up review.</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-5 gap-3">
+                {contractorFinanceLinks.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className="group flex h-full flex-col justify-between rounded-xl2 border-2 border-ink bg-card p-4 text-ink no-underline shadow-hard transition hover:-translate-y-0.5 hover:bg-paper2"
+                  >
+                    <div>
+                      <h3 className="font-display text-[18px] font-semibold leading-tight">{item.title}</h3>
+                      <p className="mt-2 text-[13.5px] leading-relaxed text-ink2">{item.description}</p>
+                    </div>
+                    <span className="mt-4 inline-flex items-center justify-center gap-2 self-start rounded-[8px] border-2 border-ink bg-honey px-3.5 py-2 text-[13px] font-bold text-ink transition group-hover:-translate-y-[1px]">
+                      Open calculator
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </section>
             <div className="mt-4">
               <LastReviewed date={REVIEW_DATE} />
             </div>
+            <AffiliateDisclosure />
+            <ContractorBusinessStack categories={recommendationCategories} currentPath={content.path} />
           </>
         ) : (
-          <ContractorFinanceInteractive path={content.path} />
+          <>
+            <ContractorFinanceInteractive path={content.path} />
+            <AffiliateDisclosure />
+            <ContractorBusinessStack categories={recommendationCategories} currentPath={content.path} />
+          </>
         )}
 
         <FinancialDisclaimer>
