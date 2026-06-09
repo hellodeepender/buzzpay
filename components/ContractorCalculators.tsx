@@ -3,6 +3,7 @@
 import { Children, useEffect, useMemo, useState } from "react";
 import { AlertTriangle, Calculator } from "lucide-react";
 import EmailReportCapture from "@/components/EmailReportCapture";
+import AIResultExplanation from "@/components/AIResultExplanation";
 import { money } from "@/lib/format";
 import {
   TAX_YEAR,
@@ -238,6 +239,11 @@ export function W2VsC2CCalculator({ onSnapshotChange }: { onSnapshotChange?: Sna
             resultSnapshot={snapshot}
           />
         </section>
+        <AIResultExplanation
+          calculatorSlug="w2-vs-c2c"
+          calculatorName="W2 vs C2C Calculator"
+          snapshot={snapshot}
+        />
       </div>
     </ToolShell>
   );
@@ -320,6 +326,11 @@ export function ContractorRateCalculator({ onSnapshotChange }: { onSnapshotChang
             resultSnapshot={snapshot}
           />
         </section>
+        <AIResultExplanation
+          calculatorSlug="contractor-rate-calculator"
+          calculatorName="Contractor Rate Calculator"
+          snapshot={snapshot}
+        />
       </div>
     </ToolShell>
   );
@@ -398,6 +409,11 @@ export function SCorpSavingsCalculator({ onSnapshotChange }: { onSnapshotChange?
             resultSnapshot={snapshot}
           />
         </section>
+        <AIResultExplanation
+          calculatorSlug="s-corp-savings-calculator"
+          calculatorName="S-Corp Savings Calculator"
+          snapshot={snapshot}
+        />
       </div>
     </ToolShell>
   );
@@ -476,6 +492,11 @@ export function LLCVsSCorpCalculator({ onSnapshotChange }: { onSnapshotChange?: 
             resultSnapshot={snapshot}
           />
         </section>
+        <AIResultExplanation
+          calculatorSlug="llc-vs-s-corp"
+          calculatorName="LLC vs S-Corp"
+          snapshot={snapshot}
+        />
       </div>
     </ToolShell>
   );
@@ -561,6 +582,11 @@ export function Tax1099Calculator({ onSnapshotChange }: { onSnapshotChange?: Sna
             resultSnapshot={snapshot}
           />
         </section>
+        <AIResultExplanation
+          calculatorSlug="1099-tax-calculator"
+          calculatorName="1099 Tax Calculator"
+          snapshot={snapshot}
+        />
       </div>
     </ToolShell>
   );
