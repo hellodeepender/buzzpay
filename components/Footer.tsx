@@ -8,12 +8,13 @@ export default function Footer() {
         <Link href="/contractor-finance">Contractor Finance</Link>
         <Link href="/templates">Invoice Templates</Link>
         <Link href="/about">About</Link>
+        <Link href="/affiliate-disclosure">Affiliate Disclosure</Link>
         <Link href="/privacy">Privacy &amp; disclosure</Link>
       </nav>
       <p className="text-xs text-muted mt-2 max-w-[640px]">
         Calculators are estimates and not financial, tax, or legal advice; always verify current processor
         rates and tax rules for your situation. Some links are affiliate links — if you sign up through them
-        we may earn a commission at no extra cost to you.
+        we may earn a commission at no extra cost to you. See the affiliate disclosure for details.
       </p>
     </footer>
   );
