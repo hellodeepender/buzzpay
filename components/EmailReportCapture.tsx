@@ -2,9 +2,9 @@
 
 import { FormEvent, useState } from "react";
 import { track } from "@vercel/analytics";
+import type { ContractorReportSnapshot } from "@/lib/contractor-report-snapshots";
 
 type SubmitState = "idle" | "submitting" | "success" | "error";
-type ReportSnapshot = Record<string, string | number | boolean | null>;
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -19,7 +19,7 @@ export default function EmailReportCapture({
   calculatorName: string;
   instanceId: string;
   pagePath?: string;
-  resultSnapshot?: ReportSnapshot;
+  resultSnapshot?: ContractorReportSnapshot;
 }) {
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -87,8 +87,8 @@ export default function EmailReportCapture({
     return (
       <div className="border-2 border-dashed border-ink rounded-[8px] bg-paper2 p-4">
         <h2 className="font-display text-lg font-semibold text-ink">Free Report</h2>
-        <p className="mt-2 text-[13.5px] text-moss font-semibold">You are on the list.</p>
-        <p className="mt-1 text-[12.5px] text-ink2">We will send the report when this feature opens up.</p>
+        <p className="mt-2 text-[13.5px] text-moss font-semibold">Your request is saved.</p>
+        <p className="mt-1 text-[12.5px] text-ink2">We will email the report when delivery is available.</p>
         <button
           type="button"
           onClick={() => setState("idle")}

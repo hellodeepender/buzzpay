@@ -25,6 +25,7 @@ type ReportRequestPayload = {
 };
 
 type DeliveryStatus = "sent" | "skipped" | "failed";
+type ReportSnapshot = Record<string, unknown>;
 
 type RateBucket = { count: number; resetAt: number };
 const rateLimitStore = new Map<string, RateBucket>();
@@ -37,24 +38,81 @@ function sanitizeString(value: unknown, maxLength: number) {
   return value.trim().slice(0, maxLength);
 }
 
-function sanitizeSnapshot(value: unknown) {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
-  const source = value as Record<string, unknown>;
-  const snapshot: Record<string, string | number | boolean | null> = {};
-
-  for (const [key, entry] of Object.entries(source).slice(0, 20)) {
-    if (!/^[a-zA-Z0-9_-]{1,40}$/.test(key)) continue;
-    if (
-      typeof entry === "string" ||
-      typeof entry === "number" ||
-      typeof entry === "boolean" ||
-      entry === null
-    ) {
-      snapshot[key] = typeof entry === "string" ? entry.slice(0, 120) : entry;
-    }
+function sanitizeSnapshotValue(value: unknown, depth = 0): unknown {
+  if (value === null) return null;
+  if (typeof value === "string") return value.trim().slice(0, 160);
+  if (typeof value === "number") return Number.isFinite(value) ? value : null;
+  if (typeof value === "boolean") return value;
+  if (Array.isArray(value)) {
+    if (depth >= 2) return undefined;
+    return value.slice(0, 10).map((item) => sanitizeSnapshotValue(item, depth + 1)).filter((item) => item !== undefined);
   }
+  if (typeof value === "object") {
+    if (depth >= 2) return undefined;
+    const entries = Object.entries(value as Record<string, unknown>).slice(0, 20);
+    const snapshot: Record<string, unknown> = {};
+    for (const [key, entry] of entries) {
+      const safeKey = key.trim().slice(0, 80);
+      if (!safeKey) continue;
+      const sanitized = sanitizeSnapshotValue(entry, depth + 1);
+      if (sanitized !== undefined) {
+        snapshot[safeKey] = sanitized;
+      }
+    }
+    return Object.keys(snapshot).length ? snapshot : undefined;
+  }
+  return undefined;
+}
 
-  return Object.keys(snapshot).length ? snapshot : undefined;
+function sanitizeSnapshot(value: unknown) {
+  const sanitized = sanitizeSnapshotValue(value);
+  if (!sanitized || typeof sanitized !== "object" || Array.isArray(sanitized)) return undefined;
+  try {
+    const serialized = JSON.stringify(sanitized);
+    if (!serialized || serialized.length > 8000) return undefined;
+  } catch {
+    return undefined;
+  }
+  return sanitized as ReportSnapshot;
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function formatSnapshotValue(value: unknown) {
+  if (value === null || value === undefined) return "—";
+  if (typeof value === "object") return JSON.stringify(value);
+  return String(value);
+}
+
+function renderSnapshotEntries(title: string, value: unknown) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return "";
+  const entries = Object.entries(value as Record<string, unknown>).slice(0, 10);
+  if (!entries.length) return "";
+  return [
+    title,
+    ...entries.map(([key, entry]) => `- ${key}: ${formatSnapshotValue(entry)}`),
+  ].join("\n");
+}
+
+function renderSnapshotHtmlList(title: string, value: unknown) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return "";
+  const entries = Object.entries(value as Record<string, unknown>).slice(0, 10);
+  if (!entries.length) return "";
+  return `
+    <p><strong>${escapeHtml(title)}</strong></p>
+    <ul>
+      ${entries
+        .map(([key, entry]) => `<li><strong>${escapeHtml(key)}:</strong> ${escapeHtml(formatSnapshotValue(entry))}</li>`)
+      .join("")}
+    </ul>
+  `;
 }
 
 function getClientIp(request: Request) {
@@ -118,11 +176,13 @@ function renderReportEmail({
   calculatorName,
   calculatorSlug,
   pagePath,
+  resultSnapshot,
 }: {
   firstName?: string;
   calculatorName: string;
   calculatorSlug: string;
   pagePath: string;
+  resultSnapshot?: ReportSnapshot;
 }) {
   const greeting = firstName ? `Hi ${firstName},` : "Hi,";
   const calculatorUrl = `https://www.buzzpay.app${pagePath}`;
@@ -133,6 +193,29 @@ function renderReportEmail({
     ["/llc-vs-s-corp", "LLC vs S-Corp"],
     ["/1099-tax-calculator", "1099 Tax Calculator"],
   ];
+  const snapshotSummary = resultSnapshot?.summary && typeof resultSnapshot.summary === "string" ? resultSnapshot.summary : "";
+  const inputsSection = renderSnapshotEntries("Current inputs:", resultSnapshot?.inputs);
+  const resultsSection = renderSnapshotEntries("Key results:", resultSnapshot?.results);
+  const assumptionsVersion =
+    typeof resultSnapshot?.assumptionsVersion === "string" ? resultSnapshot.assumptionsVersion : "";
+  const timestamp = typeof resultSnapshot?.timestamp === "string" ? resultSnapshot.timestamp : "";
+  const summaryText = snapshotSummary
+    ? `Summary: ${snapshotSummary}`
+    : "This is an educational estimate for planning and comparison only.";
+  const snapshotText = [
+    assumptionsVersion ? `Snapshot version: ${assumptionsVersion}` : "",
+    timestamp ? `Snapshot time: ${timestamp}` : "",
+    snapshotSummary ? `Summary: ${snapshotSummary}` : "",
+    inputsSection,
+    resultsSection,
+  ].filter(Boolean).join("\n\n");
+  const snapshotHtml = [
+    assumptionsVersion ? `<p><strong>Snapshot version:</strong> ${escapeHtml(assumptionsVersion)}</p>` : "",
+    timestamp ? `<p><strong>Snapshot time:</strong> ${escapeHtml(timestamp)}</p>` : "",
+    snapshotSummary ? `<p><strong>Summary:</strong> ${escapeHtml(snapshotSummary)}</p>` : "",
+    renderSnapshotHtmlList("Current inputs", resultSnapshot?.inputs),
+    renderSnapshotHtmlList("Key results", resultSnapshot?.results),
+  ].join("");
 
   const text = [
     `${greeting}`,
@@ -141,8 +224,9 @@ function renderReportEmail({
     `Calculator: ${calculatorName}`,
     `Link: ${calculatorUrl}`,
     "",
-    "This is an educational estimate for planning and comparison only.",
+    summaryText,
     "It is not tax, legal, or financial advice.",
+    snapshotText,
     "",
     "Related tools:",
     ...related.map(([href, label]) => `- ${label}: https://www.buzzpay.app${href}`),
@@ -152,12 +236,13 @@ function renderReportEmail({
 
   const html = `
     <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #1c1813">
-      <p>${greeting}</p>
-      <p>Your BuzzPay contractor finance report request for <strong>${calculatorName}</strong> is on file.</p>
-      <p><strong>Calculator:</strong> ${calculatorName}<br />
+      <p>${escapeHtml(greeting)}</p>
+      <p>Your BuzzPay contractor finance report request for <strong>${escapeHtml(calculatorName)}</strong> is on file.</p>
+      <p><strong>Calculator:</strong> ${escapeHtml(calculatorName)}<br />
       <strong>Link:</strong> <a href="${calculatorUrl}">${calculatorUrl}</a></p>
-      <p>This is an educational estimate for planning and comparison only.<br />
+      <p>${escapeHtml(summaryText)}<br />
       It is not tax, legal, or financial advice.</p>
+      ${snapshotHtml}
       <p><strong>Related tools</strong></p>
       <ul>
         ${related.map(([href, label]) => `<li><a href="https://www.buzzpay.app${href}">${label}</a></li>`).join("")}
@@ -291,6 +376,7 @@ export async function POST(request: Request) {
         calculatorName: reportRequest.calculatorName,
         calculatorSlug: reportRequest.calculatorSlug,
         pagePath: reportRequest.pagePath,
+        resultSnapshot: reportRequest.resultSnapshot,
       });
       const sent = await resend!.emails.send({
         from,

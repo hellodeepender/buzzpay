@@ -1,6 +1,6 @@
 "use client";
 
-import { Children, useState } from "react";
+import { Children, useEffect, useMemo, useState } from "react";
 import { AlertTriangle, Calculator } from "lucide-react";
 import { money } from "@/lib/format";
 import {
@@ -14,6 +14,14 @@ import {
   clamp,
   type FilingStatus,
 } from "@/lib/contractor-calculators";
+import type { ContractorReportSnapshot } from "@/lib/contractor-report-snapshots";
+import {
+  build1099TaxSnapshot,
+  buildContractorRateSnapshot,
+  buildLLCVsSCorpSnapshot,
+  buildSCorpSavingsSnapshot,
+  buildW2VsC2CSnapshot,
+} from "@/lib/contractor-report-snapshots";
 
 type FieldProps = {
   label: string;
@@ -135,7 +143,9 @@ function Row({ label, value, strong = false }: { label: string; value: string; s
 
 const n = (value: string, min: number, max: number) => clamp(Number(value), min, max);
 
-export function W2VsC2CCalculator() {
+type SnapshotChangeHandler = (snapshot: ContractorReportSnapshot) => void;
+
+export function W2VsC2CCalculator({ onSnapshotChange }: { onSnapshotChange?: SnapshotChangeHandler }) {
   const [w2Salary, setW2Salary] = useState("120000");
   const [w2Bonus, setW2Bonus] = useState("10000");
   const [w2Benefits, setW2Benefits] = useState("18000");
@@ -154,6 +164,46 @@ export function W2VsC2CCalculator() {
     c2cTaxRate: n(c2cTaxRate, 0, 60), riskReserveRate: n(riskRate, 0, 40),
   });
   const c2cAhead = result.difference >= 0;
+  const snapshot = useMemo(() => buildW2VsC2CSnapshot({
+    calculatorSlug: "w2-vs-c2c",
+    calculatorName: "W2 vs C2C Calculator",
+    pagePath: "/w2-vs-c2c",
+    w2Salary: n(w2Salary, 0, 1000000),
+    w2Bonus: n(w2Bonus, 0, 500000),
+    w2Benefits: n(w2Benefits, 0, 250000),
+    w2TaxRate: n(w2TaxRate, 0, 60),
+    c2cRate: n(c2cRate, 1, 1000),
+    c2cHoursPerWeek: n(hours, 1, 80),
+    c2cWeeks: n(weeks, 1, 52),
+    c2cExpenses: n(expenses, 0, 500000),
+    c2cTaxRate: n(c2cTaxRate, 0, 60),
+    riskReserveRate: n(riskRate, 0, 40),
+    result,
+  }), [
+    w2Salary,
+    w2Bonus,
+    w2Benefits,
+    w2TaxRate,
+    c2cRate,
+    hours,
+    weeks,
+    expenses,
+    c2cTaxRate,
+    riskRate,
+    result.w2Cash,
+    result.w2EstimatedTax,
+    result.w2EstimatedValue,
+    result.c2cGross,
+    result.riskReserve,
+    result.c2cProfitBeforeTax,
+    result.c2cEstimatedTax,
+    result.c2cEstimatedValue,
+    result.difference,
+  ]);
+
+  useEffect(() => {
+    onSnapshotChange?.(snapshot);
+  }, [onSnapshotChange, snapshot]);
 
   return (
     <ToolShell title="W2 vs C2C comparison calculator" description="Compare estimated retained economic value using your benefits, utilization, costs, tax-rate assumptions, and risk reserve."
@@ -181,7 +231,7 @@ export function W2VsC2CCalculator() {
   );
 }
 
-export function ContractorRateCalculator() {
+export function ContractorRateCalculator({ onSnapshotChange }: { onSnapshotChange?: SnapshotChangeHandler }) {
   const [takeHome, setTakeHome] = useState("90000");
   const [benefits, setBenefits] = useState("12000");
   const [expenses, setExpenses] = useState("10000");
@@ -194,6 +244,40 @@ export function ContractorRateCalculator() {
     expenses: n(expenses, 0, 500000), profitReserve: n(reserve, 0, 500000),
     taxRate: n(taxRate, 0, 60), billableHoursPerWeek: n(hours, 1, 80), workingWeeks: n(weeks, 1, 52),
   });
+  const snapshot = useMemo(() => buildContractorRateSnapshot({
+    calculatorSlug: "contractor-rate-calculator",
+    calculatorName: "Contractor Rate Calculator",
+    pagePath: "/contractor-rate-calculator",
+    takeHomeTarget: n(takeHome, 0, 1000000),
+    benefits: n(benefits, 0, 250000),
+    expenses: n(expenses, 0, 500000),
+    profitReserve: n(reserve, 0, 500000),
+    taxRate: n(taxRate, 0, 60),
+    billableHoursPerWeek: n(hours, 1, 80),
+    workingWeeks: n(weeks, 1, 52),
+    result,
+  }), [
+    takeHome,
+    benefits,
+    expenses,
+    reserve,
+    taxRate,
+    hours,
+    weeks,
+    result.billableHours,
+    result.taxableCashNeed,
+    result.operatingCosts,
+    result.requiredRevenue,
+    result.estimatedTaxReserve,
+    result.hourlyRate,
+    result.roundedHourlyRate,
+    result.dayRate,
+    result.monthlyRevenueTarget,
+  ]);
+
+  useEffect(() => {
+    onSnapshotChange?.(snapshot);
+  }, [onSnapshotChange, snapshot]);
 
   return (
     <ToolShell title="Contractor rate calculator" description="Work backward from annual cash needs and realistic billable capacity to a minimum planning rate."
@@ -218,7 +302,7 @@ export function ContractorRateCalculator() {
   );
 }
 
-export function SCorpSavingsCalculator() {
+export function SCorpSavingsCalculator({ onSnapshotChange }: { onSnapshotChange?: SnapshotChangeHandler }) {
   const [profit, setProfit] = useState("180000");
   const [salary, setSalary] = useState("110000");
   const [w2Wages, setW2Wages] = useState("0");
@@ -231,6 +315,38 @@ export function SCorpSavingsCalculator() {
     stateEntityCosts: n(stateCosts, 0, 100000), filingStatus,
   });
   const positive = result.netEstimatedBenefit >= 0;
+  const snapshot = useMemo(() => buildSCorpSavingsSnapshot({
+    calculatorSlug: "s-corp-savings-calculator",
+    calculatorName: "S-Corp Savings Calculator",
+    pagePath: "/s-corp-savings-calculator",
+    profit: n(profit, 0, 2000000),
+    salary: n(salary, 0, 1000000),
+    currentW2Wages: n(w2Wages, 0, 1000000),
+    payrollAndComplianceCosts: n(compliance, 0, 100000),
+    stateEntityCosts: n(stateCosts, 0, 100000),
+    filingStatus,
+    result,
+  }), [
+    profit,
+    salary,
+    w2Wages,
+    compliance,
+    stateCosts,
+    filingStatus,
+    result.profit,
+    result.salary,
+    result.nonWageProfit,
+    result.baselineSeTax,
+    result.salaryPayrollTax,
+    result.grossEmploymentTaxDifference,
+    result.addedCosts,
+    result.netEstimatedBenefit,
+    result.breakEvenStatus,
+  ]);
+
+  useEffect(() => {
+    onSnapshotChange?.(snapshot);
+  }, [onSnapshotChange, snapshot]);
 
   return (
     <ToolShell title="S-corporation savings calculator" description={`Compare a simplified baseline self-employment-tax estimate with payroll taxes on entered salary using ${TAX_YEAR} Social Security limits.`}
@@ -253,7 +369,7 @@ export function SCorpSavingsCalculator() {
   );
 }
 
-export function LLCVsSCorpCalculator() {
+export function LLCVsSCorpCalculator({ onSnapshotChange }: { onSnapshotChange?: SnapshotChangeHandler }) {
   const [profit, setProfit] = useState("180000");
   const [salary, setSalary] = useState("110000");
   const [llcCosts, setLlcCosts] = useState("1200");
@@ -267,6 +383,37 @@ export function LLCVsSCorpCalculator() {
     stateEntityCosts: n(stateCosts, 0, 100000), currentW2Wages: n(w2Wages, 0, 1000000), filingStatus,
   });
   const sCorpLower = result.estimatedDifference >= 0;
+  const snapshot = useMemo(() => buildLLCVsSCorpSnapshot({
+    calculatorSlug: "llc-vs-s-corp",
+    calculatorName: "LLC vs S-Corp",
+    pagePath: "/llc-vs-s-corp",
+    annualProfit: n(profit, 0, 2000000),
+    reasonableSalary: n(salary, 0, 1000000),
+    llcAdminCosts: n(llcCosts, 0, 100000),
+    sCorpAdminCosts: n(sCorpCosts, 0, 100000),
+    stateEntityCosts: n(stateCosts, 0, 100000),
+    currentW2Wages: n(w2Wages, 0, 1000000),
+    filingStatus,
+    result,
+  }), [
+    profit,
+    salary,
+    llcCosts,
+    sCorpCosts,
+    stateCosts,
+    w2Wages,
+    filingStatus,
+    result.defaultLLCEstimatedCost,
+    result.sCorpEstimatedCost,
+    result.estimatedDifference,
+    result.llcSeTax,
+    result.sCorpSalaryPayrollTax,
+    result.nonWageProfit,
+  ]);
+
+  useEffect(() => {
+    onSnapshotChange?.(snapshot);
+  }, [onSnapshotChange, snapshot]);
 
   return (
     <ToolShell title="LLC default tax vs S-corporation cost comparison" description="Compare a simplified federal employment-tax and administration-cost scenario. This does not decide legal form, eligibility, or reasonable salary."
@@ -289,7 +436,7 @@ export function LLCVsSCorpCalculator() {
   );
 }
 
-export function Tax1099Calculator() {
+export function Tax1099Calculator({ onSnapshotChange }: { onSnapshotChange?: SnapshotChangeHandler }) {
   const [revenue, setRevenue] = useState("150000");
   const [expenses, setExpenses] = useState("30000");
   const [w2Wages, setW2Wages] = useState("0");
@@ -304,6 +451,40 @@ export function Tax1099Calculator() {
     paymentsMade: n(payments, 0, 2000000),
   });
   const due = result.remainingBalance >= 0;
+  const snapshot = useMemo(() => build1099TaxSnapshot({
+    calculatorSlug: "1099-tax-calculator",
+    calculatorName: "1099 Tax Calculator",
+    pagePath: "/1099-tax-calculator",
+    grossRevenue: n(revenue, 0, 5000000),
+    businessExpenses: n(expenses, 0, 5000000),
+    w2Wages: n(w2Wages, 0, 1000000),
+    filingStatus,
+    federalIncomeTaxRate: n(federalRate, 0, 50),
+    stateTaxRate: n(stateRate, 0, 20),
+    paymentsMade: n(payments, 0, 2000000),
+    result,
+  }), [
+    revenue,
+    expenses,
+    w2Wages,
+    filingStatus,
+    federalRate,
+    stateRate,
+    payments,
+    result.netProfit,
+    result.selfEmploymentTax,
+    result.estimatedFederalIncomeTax,
+    result.estimatedStateTax,
+    result.totalEstimatedTax,
+    result.paymentsMade,
+    result.remainingBalance,
+    result.suggestedQuarterlySetAside,
+    result.effectiveTaxRate,
+  ]);
+
+  useEffect(() => {
+    onSnapshotChange?.(snapshot);
+  }, [onSnapshotChange, snapshot]);
 
   return (
     <ToolShell title="1099 tax planning calculator" description={`Estimate self-employment tax with ${TAX_YEAR} limits, then add your own blended federal and state income-tax rates.`}
@@ -329,11 +510,17 @@ export function Tax1099Calculator() {
   );
 }
 
-export function CalculatorForPath({ path }: { path: string }) {
-  if (path === "/w2-vs-c2c") return <W2VsC2CCalculator />;
-  if (path === "/contractor-rate-calculator") return <ContractorRateCalculator />;
-  if (path === "/s-corp-savings-calculator") return <SCorpSavingsCalculator />;
-  if (path === "/llc-vs-s-corp") return <LLCVsSCorpCalculator />;
-  if (path === "/1099-tax-calculator") return <Tax1099Calculator />;
+export function CalculatorForPath({
+  path,
+  onSnapshotChange,
+}: {
+  path: string;
+  onSnapshotChange?: SnapshotChangeHandler;
+}) {
+  if (path === "/w2-vs-c2c") return <W2VsC2CCalculator onSnapshotChange={onSnapshotChange} />;
+  if (path === "/contractor-rate-calculator") return <ContractorRateCalculator onSnapshotChange={onSnapshotChange} />;
+  if (path === "/s-corp-savings-calculator") return <SCorpSavingsCalculator onSnapshotChange={onSnapshotChange} />;
+  if (path === "/llc-vs-s-corp") return <LLCVsSCorpCalculator onSnapshotChange={onSnapshotChange} />;
+  if (path === "/1099-tax-calculator") return <Tax1099Calculator onSnapshotChange={onSnapshotChange} />;
   return null;
 }
